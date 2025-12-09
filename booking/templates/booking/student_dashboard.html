@@ -1,0 +1,40 @@
+{% extends "booking/base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="fw-bold mb-3">Hello, {{ student.name }} 👋</h2>
+
+<a href="{% url 'booking:student_logout' %}" class="btn btn-danger mb-3">Logout</a>
+
+<div class="card p-4">
+    <h4 class="mb-3">Available Sessions</h4>
+
+    {% if available %}
+        <table class="table table-bordered table-striped">
+            <thead class="table-primary">
+                <tr>
+                    <th>Counselor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for a in available %}
+                <tr>
+                    <td>{{ a.slot.counselor.username }}</td>
+                    <td>{{ a.slot.date }}</td>
+                    <td>{{ a.session_start }} - {{ a.session_end }}</td>
+                    <td>
+                        <a href="{% url 'booking:book_session' a.slot.id a.session_start %}" 
+                           class="btn btn-sm btn-success">Book</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="text-muted">No sessions available right now.</p>
+    {% endif %}
+</div>
+{% endblock %}

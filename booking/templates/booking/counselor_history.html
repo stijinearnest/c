@@ -1,0 +1,22 @@
+<!-- booking/templates/booking/counselor_history.html -->
+<!doctype html>
+<html>
+<head><title>History</title></head>
+<body>
+  <h1>All Bookings / History</h1>
+  <p><a href="{% url 'booking:counselor_dashboard' %}">Back</a></p>
+  {% if bookings %}
+    <ul>
+      {% for b in bookings %}
+        <li>
+          {{ b.slot.date }} {{ b.session_start }} - {{ b.student_name }} -
+          Remark: {{ b.counselor_remark|default:"(none)" }}
+          - <a href="{% url 'booking:add_remark' b.id %}">Add/Edit remark</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No bookings yet.</p>
+  {% endif %}
+</body>
+</html>
