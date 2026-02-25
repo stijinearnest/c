@@ -1,61 +1,181 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Principal Dashboard</title>
-</head>
-<body>
+{% extends "booking/base.html" %}
+{% block title %}Principal Dashboard{% endblock %}
 
-    <h1>Principal Dashboard</h1>
+{% block content %}
 
-    <p><strong>Total Bookings:</strong> {{ total_bookings }}</p>
-    <p><strong>Attended:</strong> {{ attended }}</p>
-    <p><strong>Not Attended:</strong> {{ not_attended }}</p>
+<style>
+.principal-container {
+    padding: 30px 10px;
+}
 
-    <h2>Bookings per Counselor</h2>
-    <ul>
+/* Header */
+.principal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.principal-header h2 {
+    color: #2e5e6e;
+    font-weight: 600;
+}
+
+.logout-btn {
+    background: #c94c4c;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background: #a63c3c;
+}
+
+/* Action Cards */
+.action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.action-card {
+    background: #2e5e6e;
+    color: white;
+    padding: 25px;
+    border-radius: 16px;
+    text-decoration: none;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.25s ease;
+}
+
+.action-card:hover {
+    background: #244d58;
+    transform: translateY(-4px);
+}
+
+.action-card h5 {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Stats */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: #f4f8fb;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.stat-card h6 {
+    font-size: 13px;
+    color: #6c7a86;
+}
+
+.stat-card h3 {
+    margin-top: 8px;
+    color: #2e5e6e;
+}
+
+/* Counselor Report */
+.report-section h4 {
+    color: #2e5e6e;
+    margin-bottom: 20px;
+}
+
+.report-card {
+    background: white;
+    border-left: 6px solid #2e5e6e;
+    padding: 18px 20px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Analytics Placeholder */
+.analytics-card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    margin-top: 40px;
+}
+</style>
+
+<div class="principal-container">
+
+    <!-- Header -->
+    <div class="principal-header">
+        <h2>Principal Dashboard</h2>
+        <a href="{% url 'booking:counselor_logout' %}" class="logout-btn">
+            Logout
+        </a>
+    </div>
+
+    <!-- Action Cards -->
+    <div class="action-cards">
+
+        <a href="{% url 'booking:add_counselor' %}" class="action-card">
+            <h5>➕ Add Counselor</h5>
+        </a>
+
+       <a href="{%url 'booking:principal_analytics'%}"  class="action-card">
+            <h5>📈 Analytics Dashboard</h5>
+        </a>
+
+      
+    </div>
+
+    <!-- Overall Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <h6>Total Bookings</h6>
+            <h3>{{ total_bookings }}</h3>
+        </div>
+
+        <div class="stat-card">
+            <h6>Attended</h6>
+            <h3>{{ attended }}</h3>
+        </div>
+
+        <div class="stat-card">
+            <h6>Not Attended</h6>
+            <h3>{{ not_attended }}</h3>
+        </div>
+    </div>
+
+    <!-- Counselor Reports -->
+    <div class="report-section">
+        <h4>📋 Bookings per Counselor</h4>
+
         {% for row in per_counselor %}
-            <li>
-                {{ row.slot__counselor__username }} – {{ row.total }}
-            </li>
+            <div class="report-card">
+                <div>
+                    <strong>{{ row.slot__counselor__username }}</strong>
+                </div>
+                <div>
+                    {{ row.total }} Bookings
+                </div>
+            </div>
         {% empty %}
-            <li>No bookings yet.</li>
+            <p class="text-muted">No bookings yet.</p>
         {% endfor %}
-    </ul>
-    <hr>
+    </div>
 
-<h2>Manage Counselors</h2>
+  
+</div>
 
-<table border="1" cellpadding="6">
-    <tr>
-        <th>Username</th>
-        <th>Action</th>
-    </tr>
-
-    {% for counselor in counselors %}
-        <tr>
-            <td>{{ counselor.username }}</td>
-            <td>
-                <form method="post"
-                      action="{% url 'booking:delete_counselor' counselor.id %}"
-                      style="display:inline;"
-                      onsubmit="return confirm('Are you sure you want to delete this counselor?');">
-                    {% csrf_token %}
-                    <button type="submit">Delete</button>
-                </form>
-            </td>
-        </tr>
-    {% empty %}
-        <tr>
-            <td colspan="2">No counselors found.</td>
-        </tr>
-    {% endfor %}
-</table>
-
-
-    <p>
-        <a href="{% url 'booking:add_counselor' %}">Add Counselor</a> |
-        <a href="{% url 'booking:counselor_logout' %}">Logout</a>
-    </p>
-
-</body>
-</html>
+{% endblock %}

@@ -55,6 +55,26 @@ class StudentLoginForm(forms.Form):
     student_email = forms.EmailField(label='Your email')
 
 class BookingForm(forms.ModelForm):
+    student_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
+    student_email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = Booking
-        fields = ['student_name', 'student_email', 'student_department', 'student_year']
+        fields = [
+            'student_name',
+            'student_email',
+            'student_department',
+            'student_year',
+            'is_emergency'
+        ]
+        widgets = {
+            'student_department': forms.TextInput(attrs={'class': 'form-control'}),
+            'student_year': forms.TextInput(attrs={'class': 'form-control'}),
+            'is_emergency': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        }

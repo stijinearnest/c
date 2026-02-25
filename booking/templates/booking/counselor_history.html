@@ -1,22 +1,133 @@
-<!-- booking/templates/booking/counselor_history.html -->
-<!doctype html>
-<html>
-<head><title>History</title></head>
-<body>
-  <h1>All Bookings / History</h1>
-  <p><a href="{% url 'booking:counselor_dashboard' %}">Back</a></p>
-  {% if bookings %}
-    <ul>
-      {% for b in bookings %}
-        <li>
-          {{ b.slot.date }} {{ b.session_start }} - {{ b.masked_student_name }}-
-          Remark: {{ b.counselor_remark|default:"(none)" }}
-          - <a href="{% url 'booking:add_remark' b.id %}">Add/Edit remark</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No bookings yet.</p>
-  {% endif %}
-</body>
-</html>
+{% extends "booking/base.html" %}
+{% block title %}Session History{% endblock %}
+
+{% block content %}
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-title {
+    color: #2e5e6e;
+    font-weight: 600;
+}
+
+.history-card {
+    background: white;
+    border-left: 5px solid #2e5e6e;
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+    transition: 0.2s;
+}
+
+.history-card:hover {
+    transform: translateY(-2px);
+}
+
+.history-date {
+    font-weight: 600;
+    color: #2e5e6e;
+}
+
+.history-meta {
+    font-size: 14px;
+    color: #6c7a86;
+}
+
+.remark-box {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f4f8fb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.badge-attended {
+    background: #cce5d8;
+    color: #1d6f42;
+}
+
+.badge-missed {
+    background: #fde2e2;
+    color: #a94442;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6c7a86;
+}
+</style>
+
+<div class="page-header">
+    <h4 class="page-title">Session History</h4>
+    <a href="{% url 'booking:counselor_dashboard' %}" 
+       class="btn btn-outline-primary btn-sm">
+        Back
+    </a>
+</div>
+
+{% if bookings %}
+
+    <div class="mb-3">
+        <strong>Total Sessions:</strong> {{ bookings|length }}
+    </div>
+
+    {% for b in bookings %}
+        <div class="history-card">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <div class="history-date">
+                        {{ b.slot.date }} | {{ b.session_start }} – {{ b.session_end }}
+                    </div>
+
+                    <div class="history-meta mt-1">
+                        Student: {{ b.student.name }}
+                    </div>
+                </div>
+
+                <div>
+                    {% if b.attended %}
+                        <span class="status-badge badge-attended">Attended</span>
+                    {% else %}
+                        <span class="status-badge badge-missed">Not Marked</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="remark-box">
+                <strong>Remark:</strong>
+                {{ b.counselor_remark|default:"No remark added yet." }}
+            </div>
+
+            <div class="mt-2">
+                <a href="{% url 'booking:add_remark' b.id %}" 
+                   class="btn btn-sm btn-outline-primary">
+                    Add / Edit Remark
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+
+{% else %}
+
+    <div class="empty-state">
+        <h6>No session history yet</h6>
+        <p>Completed sessions will appear here.</p>
+    </div>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>College Counselling Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #d7e3ea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 900px;
+            height: 520px;
+            background: #f4f8fb;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* LEFT PANEL */
+        .left-panel {
+            width: 40%;
+            background: #2e5e6e;
+            color: white;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .left-panel h2 {
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .role-switch {
+            margin-top: 40px;
+        }
+
+        .role-switch button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .active-role {
+            background: white;
+            color: #2e5e6e;
+            font-weight: 600;
+        }
+
+        .inactive-role {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .inactive-role:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* RIGHT PANEL */
+        .right-panel {
+            width: 60%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-panel h3 {
+            color: #2e5e6e;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #c7d6df;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2e5e6e;
+            box-shadow: 0 0 0 2px rgba(46,94,110,0.2);
+        }
+
+        .btn-submit {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background: #2e5e6e;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #254d59;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                width: 95%;
+                height: auto;
+            }
+            .left-panel, .right-panel {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="left-panel">
+        <div>
+            <h2>College Counselling</h2>
+            <p>Secure Access Portal</p>
+        </div>
+
+        <div class="role-switch">
+            <button id="studentBtn" class="active-role">Student Login</button>
+            <button id="staffBtn" class="inactive-role">Counselor / Principal</button>
+        </div>
+
+        <div class="footer-text">
+            © 2026 Counselling System
+        </div>
+    </div>
+
+    <div class="right-panel">
+
+        <!-- STUDENT FORM -->
+        <div id="studentForm">
+            <h3>Student Access</h3>
+            <form method="post" action="{% url 'booking:student_login' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="student_name" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="student_email" placeholder="Email Address" required>
+                </div>
+                <button type="submit" class="btn-submit">Continue</button>
+            </form>
+        </div>
+
+        <!-- STAFF FORM -->
+        <div id="staffForm" class="hidden">
+            <h3>Staff Access</h3>
+            <form method="post" action="{% url 'booking:login' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-submit">Login</button>
+                <p class="mt-2">
+    <a href="{% url 'password_reset' %}" 
+       style="font-size:14px; text-decoration:none; color:#2e5e6e;">
+        Forgot your password?
+    </a>
+</p>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const studentBtn = document.getElementById("studentBtn");
+    const staffBtn = document.getElementById("staffBtn");
+    const studentForm = document.getElementById("studentForm");
+    const staffForm = document.getElementById("staffForm");
+
+    studentBtn.addEventListener("click", function() {
+        studentForm.classList.remove("hidden");
+        staffForm.classList.add("hidden");
+
+        studentBtn.classList.add("active-role");
+        studentBtn.classList.remove("inactive-role");
+
+        staffBtn.classList.remove("active-role");
+        staffBtn.classList.add("inactive-role");
+    });
+
+    staffBtn.addEventListener("click", function() {
+        staffForm.classList.remove("hidden");
+        studentForm.classList.add("hidden");
+
+        staffBtn.classList.add("active-role");
+        staffBtn.classList.remove("inactive-role");
+
+        studentBtn.classList.remove("active-role");
+        studentBtn.classList.add("inactive-role");
+    });
+</script>
+
+</body>
+</html>

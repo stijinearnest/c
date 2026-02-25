@@ -1,18 +1,114 @@
-<!-- booking/templates/booking/counselor_bookings.html -->
-<!doctype html>
-<html>
-<head><title>Bookings</title></head>
-<body>
-  <h1>Upcoming Bookings</h1>
-  <p><a href="{% url 'booking:counselor_dashboard' %}">Back</a></p>
-  {% if bookings %}
-    <ul>
-      {% for b in bookings %}
-        <li>{{ b.slot.date }} {{ b.session_start }} - {{ b.masked_student_name }} ({{ b.masked_student_email }})</li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No upcoming bookings.</p>
-  {% endif %}
-</body>
-</html>
+{% extends "booking/base.html" %}
+{% block title %}Upcoming Bookings{% endblock %}
+
+{% block content %}
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-title {
+    color: #2e5e6e;
+    font-weight: 600;
+}
+
+.booking-card {
+    background: white;
+    border-left: 5px solid #2e5e6e;
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+    transition: 0.2s;
+}
+
+.booking-card:hover {
+    transform: translateY(-2px);
+}
+
+.booking-date {
+    font-weight: 600;
+    color: #2e5e6e;
+}
+
+.booking-meta {
+    font-size: 14px;
+    color: #6c7a86;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.badge-attended {
+    background: #cce5d8;
+    color: #1d6f42;
+}
+
+.badge-pending {
+    background: #fde2e2;
+    color: #a94442;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6c7a86;
+}
+</style>
+
+<div class="page-header">
+    <h4 class="page-title">Upcoming Bookings</h4>
+    <a href="{% url 'booking:counselor_dashboard' %}" 
+       class="btn btn-outline-primary btn-sm">
+        Back
+    </a>
+</div>
+
+{% if bookings %}
+    
+    <div class="mb-3">
+        <strong>Total Bookings:</strong> {{ bookings|length }}
+    </div>
+
+    {% for b in bookings %}
+    <div class="booking-card">
+        <div class="d-flex justify-content-between">
+            <div>
+                <div class="booking-date">
+                    {{ b.slot.date }} | {{ b.session_start }} – {{ b.session_end }}
+                </div>
+
+                <div class="booking-meta mt-1">
+                    Student: {{ b.student.name }} <br>
+                    Email: {{ b.student.email }}
+                </div>
+            </div>
+
+            <div>
+                {% if b.attended %}
+                    <span class="status-badge badge-attended">Attended</span>
+                {% else %}
+                    <span class="status-badge badge-pending">Pending</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+{% else %}
+
+    <div class="empty-state">
+        <h6>No upcoming bookings</h6>
+        <p>When students book sessions, they will appear here.</p>
+    </div>
+
+{% endif %}
+
+{% endblock %}

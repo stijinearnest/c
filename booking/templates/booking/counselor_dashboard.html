@@ -2,27 +2,177 @@
 {% block title %}Counselor Dashboard{% endblock %}
 
 {% block content %}
-<h2>Welcome, {{ request.user.username }}</h2>
 
-<div class="mb-3">
-    <a href="{% url 'booking:add_slot' %}" class="btn btn-primary">Add Slot</a>
-    <a href="{% url 'booking:counselor_bookings' %}" class="btn btn-outline-primary">Bookings</a>
-    <a href="{% url 'booking:counselor_history' %}" class="btn btn-outline-secondary">History</a>
-    <a href="{% url 'booking:counselor_logout' %}" class="btn btn-danger float-end">Logout</a>
-</div>
+<style>
+.dashboard-container {
+    padding: 30px 10px;
+}
 
-<div class="card p-4 mt-3">
-    <h4>Upcoming Slots</h4>
+/* Header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.dashboard-header h2 {
+    color: #2e5e6e;
+    font-weight: 600;
+}
+
+.logout-btn {
+    background: #c94c4c;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.logout-btn:hover {
+    background: #a63c3c;
+}
+
+/* Action Cards */
+.action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.action-card {
+    background: #2e5e6e;
+    color: white;
+    padding: 22px;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: 0.25s ease;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.action-card:hover {
+    background: #244d58;
+    transform: translateY(-4px);
+}
+
+.action-card h5 {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Stats */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.stat-card {
+    background: #f4f8fb;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.stat-card h6 {
+    color: #6c7a86;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.stat-card h3 {
+    color: #2e5e6e;
+    margin: 0;
+}
+
+/* Slot Cards */
+.slot-section-title {
+    margin-bottom: 18px;
+    color: #2e5e6e;
+}
+
+.slot-card {
+    background: #ffffff;
+    border-left: 6px solid #2e5e6e;
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    transition: 0.2s;
+}
+
+.slot-card:hover {
+    transform: translateY(-2px);
+}
+
+.no-slots {
+    color: #6c7a86;
+}
+</style>
+
+<div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h2>Welcome, {{ request.user.username }}</h2>
+        <a href="{% url 'booking:counselor_logout' %}" class="logout-btn">
+            Logout
+        </a>
+    </div>
+
+    <!-- Action Cards -->
+    <div class="action-cards">
+        <a href="{% url 'booking:add_slot' %}" class="action-card">
+            <h5>➕ Add New Slot</h5>
+        </a>
+
+        <a href="{% url 'booking:counselor_bookings' %}" class="action-card">
+            <h5>📅 View Bookings</h5>
+        </a>
+
+        <a href="{% url 'booking:counselor_history' %}" class="action-card">
+            <h5>📖 Session History</h5>
+        </a>
+
+        <a href="{% url 'booking:student_search' %}" class="action-card">
+            <h5>🔎 Search Student</h5>
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <h6>Total Upcoming Slots</h6>
+            <h3>{{ slots|length }}</h3>
+        </div>
+
+        <div class="stat-card">
+            <h6>Today’s Date</h6>
+            <h3>{{ today|date:"M d, Y" }}</h3>
+        </div>
+    </div>
+
+    <!-- Upcoming Slots -->
+    <h5 class="slot-section-title">Upcoming Slots</h5>
+
     {% if slots %}
-        <ul class="list-group">
         {% for s in slots %}
-            <li class="list-group-item">
-                {{ s.date }} — {{ s.start_time }} to {{ s.end_time }}
-            </li>
+            <div class="slot-card">
+                <strong>{{ s.date }}</strong><br>
+                {{ s.start_time }} – {{ s.end_time }}
+            </div>
         {% endfor %}
-        </ul>
     {% else %}
-        <p class="text-muted">No slots added.</p>
+        <p class="no-slots">No slots added yet.</p>
     {% endif %}
+
 </div>
+
 {% endblock %}

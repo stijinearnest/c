@@ -1,0 +1,67 @@
+{% extends "booking/base.html" %}
+{% block title %}Smart Insights{% endblock %}
+
+{% block content %}
+
+<style>
+.insight-container {
+    padding: 30px 10px;
+}
+
+.insight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.insight-header h2 {
+    color: #2e5e6e;
+    font-weight: 600;
+}
+
+.insight-card {
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.positive { background: #e6f4ea; border-left: 6px solid #2e7d32; }
+.negative { background: #fdecea; border-left: 6px solid #c62828; }
+.warning  { background: #fff8e1; border-left: 6px solid #f9a825; }
+.critical { background: #ffebee; border-left: 6px solid #d32f2f; }
+.info     { background: #e3f2fd; border-left: 6px solid #1565c0; }
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6c7a86;
+}
+</style>
+
+<div class="insight-container">
+
+    <div class="insight-header">
+        <h2>🧠 Smart Insights Engine</h2>
+        <a href="{% url 'booking:principal_dashboard' %}" class="btn btn-outline-primary btn-sm">
+            Back to Dashboard
+        </a>
+    </div>
+
+    {% if insights %}
+        {% for insight in insights %}
+            <div class="insight-card {{ insight.type }}">
+                {{ insight.message }}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h5>No major insights detected</h5>
+            <p>System is running normally.</p>
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

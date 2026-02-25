@@ -1,39 +1,110 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Counselor</title>
-</head>
-<body>
+{% extends "booking/base.html" %}
+{% block title %}Add Counselor{% endblock %}
 
-    <h1>Add Counselor</h1>
+{% block content %}
 
-    {% if messages %}
-        {% for message in messages %}
-            <p style="color:red;">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+<style>
+.add-container {
+    padding: 30px 10px;
+}
 
-    <form method="post">
-        {% csrf_token %}
+.add-card {
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+}
 
-        <p>
-            <label>Username</label><br>
-            <input type="text" name="username" required>
-        </p>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
 
-        <p>
-            <label>Password</label><br>
-            <input type="password" name="password" required>
-        </p>
+.page-header h2 {
+    color: #2e5e6e;
+    font-weight: 600;
+}
 
-        <button type="submit">Create Counselor</button>
-    </form>
+.form-label {
+    font-weight: 500;
+    color: #2e5e6e;
+}
 
-    <p>
-        <a href="{% url 'booking:principal_dashboard' %}">
-            Back to Dashboard
+.btn-create {
+    background: #2e5e6e;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.btn-create:hover {
+    background: #244d58;
+}
+
+.message-box {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.message-error {
+    background: #fdecea;
+    color: #a94442;
+}
+
+.message-success {
+    background: #e6f4ea;
+    color: #1d6f42;
+}
+</style>
+
+<div class="add-container">
+
+    <div class="page-header">
+        <h2>➕ Add New Counselor</h2>
+        <a href="{% url 'booking:principal_dashboard' %}" 
+           class="btn btn-outline-primary btn-sm">
+            Back
         </a>
-    </p>
+    </div>
 
-</body>
-</html>
+    <div class="add-card">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-box 
+                    {% if message.tags == 'error' %}message-error{% else %}message-success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" 
+                       class="form-control" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" 
+                       class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn-create w-100">
+                Create Counselor
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

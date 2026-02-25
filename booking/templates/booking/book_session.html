@@ -2,15 +2,77 @@
 {% block title %}Book Session{% endblock %}
 
 {% block content %}
-<div class="card p-4">
-    <h3>Book Session</h3>
-    <p><b>Counselor:</b> {{ slot.counselor.username }}</p>
-    <p><b>Date:</b> {{ slot.date }} | <b>Time:</b> {{ session_start }}</p>
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class="btn btn-primary w-100 mt-2">Confirm Booking</button>
-    </form>
+        <div class="card p-4 shadow-sm">
+
+            <h3 class="mb-3">Book Session</h3>
+
+            <!-- Session Info -->
+            <div class="mb-4 p-3 rounded" style="background:#f1f5f7;">
+                <p class="mb-1"><strong>Counselor:</strong> {{ slot.counselor.username }}</p>
+                <p class="mb-1"><strong>Date:</strong> {{ slot.date }}</p>
+                <p class="mb-0"><strong>Time:</strong> {{ session_start }}</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Student Name & Email -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Student Name</label>
+                        {{ form.student_name }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Student Email</label>
+                        {{ form.student_email }}
+                    </div>
+                </div>
+
+                <!-- Department & Year -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Department</label>
+                        {{ form.student_department }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Year</label>
+                        {{ form.student_year }}
+                    </div>
+                </div>
+
+                <!-- Emergency Option -->
+                <div class="form-check mt-3 p-3 rounded"
+                     style="background:#fff3f3; border-left:4px solid #dc3545;">
+                    {{ form.is_emergency }}
+                    <label for="{{ form.is_emergency.id_for_label }}"
+                           class="form-check-label fw-bold text-danger">
+                        🚨 Emergency Booking
+                    </label>
+                    <div class="small text-muted mt-1">
+                        Selecting this will reschedule an existing booking if necessary.
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="{% url 'booking:student_dashboard' %}"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        Confirm Booking
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
 </div>
 {% endblock %}

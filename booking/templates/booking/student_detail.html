@@ -1,0 +1,132 @@
+{% extends "booking/base.html" %}
+{% block title %}Student Record{% endblock %}
+
+{% block content %}
+
+<style>
+.record-container {
+    padding: 30px 10px;
+}
+
+/* Profile Card */
+.profile-card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.profile-name {
+    color: #2e5e6e;
+    font-weight: 600;
+}
+
+.profile-meta {
+    color: #6c7a86;
+}
+
+/* Section Title */
+.section-title {
+    color: #2e5e6e;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Session Card */
+.session-card {
+    background: #ffffff;
+    border-left: 6px solid #2e5e6e;
+    padding: 18px 20px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    transition: 0.2s;
+}
+
+.session-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.badge-attended {
+    background: #cce5d8;
+    color: #1d6f42;
+}
+
+.badge-missed {
+    background: #fde2e2;
+    color: #a94442;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 30px;
+    color: #6c7a86;
+}
+</style>
+
+<div class="record-container">
+
+    <!-- Student Profile -->
+    <div class="profile-card">
+        <h3 class="profile-name">{{ student.name }}</h3>
+        <div class="profile-meta mt-2">
+            <p><strong>Email:</strong> {{ student.email }}</p>
+            <p><strong>Unique ID:</strong> {{ student.unique_id }}</p>
+        </div>
+    </div>
+
+    <!-- Counseling History -->
+    <h4 class="section-title">📖 Counseling History</h4>
+
+    {% if bookings %}
+
+        {% for b in bookings %}
+            <div class="session-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong>{{ b.slot.date }}</strong>
+                        ({{ b.session_start }} – {{ b.session_end }})
+                    </div>
+
+                    <div>
+                        {% if b.attended %}
+                            <span class="status-badge badge-attended">Attended</span>
+                        {% else %}
+                            <span class="status-badge badge-missed">Missed</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-2 text-muted">
+                    Department: {{ b.student_department }} |
+                    Year: {{ b.student_year }}
+                </div>
+
+                <div class="mt-2">
+                    <strong>Remark:</strong>
+                    {{ b.counselor_remark|default:"No remark provided." }}
+                </div>
+            </div>
+        {% endfor %}
+
+    {% else %}
+
+        <div class="profile-card empty-state">
+            <h6>No previous sessions</h6>
+            <p>This student has no counseling history yet.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

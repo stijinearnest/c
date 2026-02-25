@@ -1,0 +1,117 @@
+{% extends "booking/base.html" %}
+{% block title %}Search Student{% endblock %}
+
+{% block content %}
+
+<style>
+.search-container {
+    padding: 30px 10px;
+}
+
+/* Header */
+.search-title {
+    color: #2e5e6e;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+/* Search Card */
+.search-card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+/* Search Button */
+.search-btn {
+    background: #2e5e6e;
+    border: none;
+}
+
+.search-btn:hover {
+    background: #244d58;
+}
+
+/* Result Cards */
+.result-card {
+    background: #ffffff;
+    border-left: 5px solid #2e5e6e;
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    transition: 0.2s;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+}
+
+.result-name {
+    font-weight: 600;
+    color: #2e5e6e;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 30px;
+    color: #6c7a86;
+}
+</style>
+
+<div class="search-container">
+
+    <h3 class="search-title">🔎 Search Student</h3>
+
+    <!-- Search Form -->
+    <div class="search-card">
+        <form method="post">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" name="name" class="form-control"
+                       placeholder="Enter student name..." required>
+                <button class="btn search-btn text-white px-4">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results -->
+    {% if students %}
+
+        <h5 class="mb-3 text-muted">
+            {{ students|length }} result{{ students|length|pluralize }} found
+        </h5>
+
+        {% for student in students %}
+            <div class="result-card d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="result-name">{{ student.name }}</div>
+                    <small class="text-muted">
+                        {{ student.email }}
+                    </small>
+                </div>
+
+                <a href="{% url 'booking:student_detail' student.id %}"
+                   class="btn btn-sm btn-outline-primary">
+                    View Record
+                </a>
+            </div>
+        {% endfor %}
+
+    {% elif query %}
+
+        <div class="search-card empty-state">
+            <h6>No students found</h6>
+            <p>No results matched "<strong>{{ query }}</strong>"</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
