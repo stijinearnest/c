@@ -86,8 +86,6 @@ def student_dashboard(request):
                     'session_end': send.strftime('%H:%M:%S'),
                 })
     return render(request, 'booking/student_dashboard.html', {'student': student, 'available': available})
-
-
 def book_session(request, slot_id, session_start):
 
     student_in_session = request.session.get('student')
@@ -101,29 +99,37 @@ def book_session(request, slot_id, session_start):
         form = BookingForm(request.POST)
 
         if form.is_valid():
-
-            # 🔹 Create or get StudentProfile
-            student_obj, created = StudentProfile.objects.get_or_create(
-                email=form.cleaned_data['student_email'],
-                defaults={
-                    'name': form.cleaned_data['student_name']
-                }
-            )
-
-            # 🔹 Create booking object (but don't save yet)
             b = form.save(commit=False)
-            b.student = student_obj
             b.is_emergency = form.cleaned_data.get('is_emergency', False)
 
-            # =================================================
+            # -----------------------------------------
+            # 🔹 CREATE OR UPDATE STUDENT PROFILE
+            # -----------------------------------------
+            student_name = form.cleaned_data['student_name']
+            student_email = form.cleaned_data['student_email']
+
+            student, created = StudentProfile.objects.get_or_create(
+                email=student_email,
+                defaults={'name': student_name}
+            )
+
+            # If existing student but name changed → update
+            if not created and student.name != student_name:
+                student.name = student_name
+                student.save()
+
+            b.student = student
+
+            # =========================================
             # 🚨 EMERGENCY BOOKING LOGIC
-            # =================================================
+            # =========================================
             if b.is_emergency:
 
                 all_sessions = get_all_future_sessions()
                 assigned = False
 
                 for session in all_sessions:
+
                     slot_obj = session['slot']
                     start_time = session['session_start']
                     end_time = session['session_end']
@@ -133,7 +139,7 @@ def book_session(request, slot_id, session_start):
                         session_start=start_time
                     ).first()
 
-                    # ✅ If FREE
+                    # ✅ FREE SLOT → assign immediately
                     if not existing_booking:
                         b.slot = slot_obj
                         b.session_start = start_time
@@ -141,73 +147,65 @@ def book_session(request, slot_id, session_start):
                         assigned = True
                         break
 
-                    # 🔁 If BOOKED → reschedule existing booking
-                    else:
-                        for next_session in all_sessions:
-                            next_slot = next_session['slot']
-                            next_start = next_session['session_start']
-                            next_end = next_session['session_end']
+                    # ⚠ If existing is EMERGENCY → skip
+                    if existing_booking.is_emergency:
+                        continue
 
-                            is_taken = Booking.objects.filter(
-                                slot=next_slot,
-                                session_start=next_start
-                            ).exists()
+                    # 🔁 Try to reschedule NORMAL booking
+                    displaced = existing_booking
 
-                            if (
-                                not is_taken and
-                                next_session['datetime'] > session['datetime']
-                            ):
+                    # Look for next available future session
+                    next_free = None
 
-                                # 📦 Store original booking info
-                                rescheduled_name = existing_booking.student.name
-                                rescheduled_email = existing_booking.student.email
-                                old_date = existing_booking.slot.date
-                                old_time = existing_booking.session_start
+                    for future in all_sessions:
+                        if future['datetime'] <= session['datetime']:
+                            continue
 
-                                # 🔁 Perform reschedule
-                                existing_booking.slot = next_slot
-                                existing_booking.session_start = next_start
-                                existing_booking.session_end = next_end
-                                existing_booking.save()
+                        is_taken = Booking.objects.filter(
+                            slot=future['slot'],
+                            session_start=future['session_start']
+                        ).exists()
 
-                                # ✉ Send email
-                                subject = "Your Counseling Appointment Has Been Rescheduled"
+                        if not is_taken:
+                            next_free = future
+                            break
 
-                                message = f"""
-Dear {rescheduled_name},
+                    if next_free:
+                        # Save original details
+                        old_date = displaced.slot.date
+                        old_time = displaced.session_start
 
-Your counseling appointment originally scheduled on
-{old_date} at {old_time}
+                        displaced.slot = next_free['slot']
+                        displaced.session_start = next_free['session_start']
+                        displaced.session_end = next_free['session_end']
+                        displaced.save()
 
-has been rescheduled due to an emergency booking.
+                        # Send email
+                        send_mail(
+                            "Your Counseling Appointment Has Been Rescheduled",
+                            f"""
+Dear {displaced.student.name},
 
-New Appointment Details:
-Date: {next_slot.date}
-Time: {next_start}
+Your appointment on {old_date} at {old_time}
+was rescheduled due to an emergency booking.
 
-We apologize for the inconvenience.
+New Date: {next_free['slot'].date}
+New Time: {next_free['session_start']}
 
 Regards,
 Counseling Team
-"""
+""",
+                            settings.DEFAULT_FROM_EMAIL,
+                            [displaced.student.email],
+                            fail_silently=True,
+                        )
 
-                                send_mail(
-                                    subject,
-                                    message,
-                                    settings.DEFAULT_FROM_EMAIL,
-                                    [rescheduled_email],
-                                    fail_silently=False,
-                                )
-
-                                # 🎯 Assign emergency booking
-                                b.slot = slot_obj
-                                b.session_start = start_time
-                                b.session_end = end_time
-                                assigned = True
-                                break
-
-                        if assigned:
-                            break
+                        # Assign emergency booking
+                        b.slot = slot_obj
+                        b.session_start = start_time
+                        b.session_end = end_time
+                        assigned = True
+                        break
 
                 if not assigned:
                     messages.error(
@@ -216,16 +214,14 @@ Counseling Team
                     )
                     return redirect('booking:student_dashboard')
 
-            # =================================================
-            # 🟢 NORMAL BOOKING
-            # =================================================
+            # =========================================
+            # 🟢 NORMAL BOOKING LOGIC
+            # =========================================
             else:
-
                 if Booking.objects.filter(
                     slot=slot,
                     session_start=sstart
                 ).exists():
-
                     messages.error(
                         request,
                         "Sorry, this session was just booked."
@@ -234,30 +230,25 @@ Counseling Team
 
                 b.slot = slot
                 b.session_start = sstart
+                b.session_end = (
+                    datetime.datetime.combine(slot.date, sstart)
+                    + datetime.timedelta(minutes=60)
+                ).time()
 
-                dt = datetime.datetime.combine(
-                    slot.date,
-                    sstart
-                ) + datetime.timedelta(minutes=60)
-
-                b.session_end = dt.time()
-
-            # =================================================
+            # =========================================
             # 💾 SAVE BOOKING
-            # =================================================
+            # =========================================
             b.save()
 
-            # 🔐 Store session info correctly
             request.session['student'] = {
                 'name': b.student.name,
-                'email': b.student.email,
-                'unique_id': b.student.unique_id
+                'email': b.student.email
             }
 
-            if b.is_emergency:
-                messages.success(request, "Emergency booking successful!")
-            else:
-                messages.success(request, "Booking successful!")
+            messages.success(
+                request,
+                "Emergency booking successful!" if b.is_emergency else "Booking successful!"
+            )
 
             return redirect('booking:student_dashboard')
 
