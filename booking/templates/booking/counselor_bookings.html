@@ -61,6 +61,16 @@
     padding: 40px;
     color: #6c7a86;
 }
+.badge-emergency {
+    background: #ffe3e3;
+    color: #b30000;
+    font-weight: 600;
+}
+
+.emergency-card {
+    border-left: 5px solid #dc3545 !important;
+    background: #fff5f5;
+}
 </style>
 
 <div class="page-header">
@@ -78,12 +88,18 @@
     </div>
 
     {% for b in bookings %}
-    <div class="booking-card">
+    <div class="booking-card {% if b.is_emergency %}emergency-card{% endif %}">
         <div class="d-flex justify-content-between">
             <div>
                 <div class="booking-date">
-                    {{ b.slot.date }} | {{ b.session_start }} – {{ b.session_end }}
-                </div>
+    {{ b.slot.date }} | {{ b.session_start }} – {{ b.session_end }}
+
+    {% if b.is_emergency %}
+        <span class="status-badge badge-emergency ms-2">
+            🚨 Emergency
+        </span>
+    {% endif %}
+</div>
 
                 <div class="booking-meta mt-1">
                     Student: {{ b.student.name }} <br>

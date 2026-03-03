@@ -386,9 +386,10 @@ def principal_dashboard(request):
 def add_counselor(request):
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
 
-        if not username or not password:
+        if not username or not email or not password:
             messages.error(request, "All fields are required.")
             return redirect('booking:add_counselor')
 
@@ -396,8 +397,13 @@ def add_counselor(request):
             messages.error(request, "Username already exists.")
             return redirect('booking:add_counselor')
 
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already in use.")
+            return redirect('booking:add_counselor')
+
         user = User.objects.create_user(
             username=username,
+            email=email,
             password=password,
             is_active=True
         )

@@ -1,8 +1,17 @@
 # booking/urls.py
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
+from .forms import StaffPasswordResetForm
 
-
+path(
+    "password-reset/",
+    auth_views.PasswordResetView.as_view(
+        template_name="booking/password_reset.html",
+        form_class=StaffPasswordResetForm
+    ),
+    name="password_reset"
+),
 app_name = 'booking'
 
 urlpatterns = [
@@ -35,5 +44,8 @@ urlpatterns = [
 path('counselor/student/<int:student_id>/', views.student_detail, name='student_detail'),
 path('principal/analytics/', views.principal_analytics, name='principal_analytics'),
 path('principal/insights/', views.principal_insights, name='principal_insights'),
+
+
+
 
 ]

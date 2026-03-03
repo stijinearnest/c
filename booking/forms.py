@@ -1,3 +1,7 @@
+
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.models import User
+from django import forms
 # booking/forms.py  (replace SlotCreateForm with this)
 from django import forms
 from .models import Slot, Booking
@@ -78,3 +82,17 @@ class BookingForm(forms.ModelForm):
             'student_year': forms.TextInput(attrs={'class': 'form-control'}),
             'is_emergency': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
+
+
+
+class StaffPasswordResetForm(PasswordResetForm):
+    username = forms.CharField(max_length=150)
+
+    def get_users(self, email):
+        username = self.cleaned_data.get("username")
+
+        return User.objects.filter(
+            username=username,
+            email__iexact=email,
+            is_active=True
+        )
