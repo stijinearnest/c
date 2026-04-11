@@ -1,181 +1,624 @@
 {% extends "booking/base.html" %}
-{% block title %}Principal Dashboard{% endblock %}
+{% block title %}Principal Dashboard | CounselLink{% endblock %}
 
 {% block content %}
-
 <style>
-.principal-container {
-    padding: 30px 10px;
-}
+    /* Modern principal dashboard styling */
+    .principal-container {
+        max-width: 100%;
+    }
 
-/* Header */
-.principal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 35px;
-}
+    /* Welcome Section */
+    .welcome-section {
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border-radius: 1.25rem;
+        padding: 1.75rem 2rem;
+        margin-bottom: 2rem;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
 
-.principal-header h2 {
-    color: #2e5e6e;
-    font-weight: 600;
-}
+    .welcome-text h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+        letter-spacing: -0.3px;
+    }
 
-.logout-btn {
-    background: #c94c4c;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 14px;
-}
+    .welcome-text p {
+        margin: 0;
+        opacity: 0.85;
+        font-size: 0.85rem;
+    }
 
-.logout-btn:hover {
-    background: #a63c3c;
-}
+    .welcome-badge {
+        background: rgba(255,255,245,0.15);
+        backdrop-filter: blur(4px);
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-/* Action Cards */
-.action-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-}
+    /* Quick Actions Grid */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
 
-.action-card {
-    background: #2e5e6e;
-    color: white;
-    padding: 25px;
-    border-radius: 16px;
-    text-decoration: none;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    transition: 0.25s ease;
-}
+    .action-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.25rem;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid #edf4f8;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
 
-.action-card:hover {
-    background: #244d58;
-    transform: translateY(-4px);
-}
+    .action-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px -10px rgba(31,78,94,0.2);
+        border-color: #dce9f0;
+        text-decoration: none;
+    }
 
-.action-card h5 {
-    margin: 0;
-    font-weight: 500;
-}
+    .action-icon {
+        width: 52px;
+        height: 52px;
+        background: #f0f6fa;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: #1F4E5E;
+        transition: 0.2s;
+    }
 
-/* Stats */
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-}
+    .action-card:hover .action-icon {
+        background: #1F4E5E;
+        color: white;
+    }
 
-.stat-card {
-    background: #f4f8fb;
-    padding: 22px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-}
+    .action-info h5 {
+        margin: 0 0 0.2rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a3b44;
+    }
 
-.stat-card h6 {
-    font-size: 13px;
-    color: #6c7a86;
-}
+    .action-info small {
+        font-size: 0.7rem;
+        color: #7c9aa6;
+    }
 
-.stat-card h3 {
-    margin-top: 8px;
-    color: #2e5e6e;
-}
+    /* Stats Grid - 4 cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
 
-/* Counselor Report */
-.report-section h4 {
-    color: #2e5e6e;
-    margin-bottom: 20px;
-}
+    .stat-card-modern {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.25rem;
+        border: 1px solid #edf4f8;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
 
-.report-card {
-    background: white;
-    border-left: 6px solid #2e5e6e;
-    padding: 18px 20px;
-    border-radius: 14px;
-    margin-bottom: 15px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    .stat-card-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: #1F4E5E;
+    }
 
-/* Analytics Placeholder */
-.analytics-card {
-    background: white;
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    margin-top: 40px;
-}
+    .stat-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        color: #7c9aa6;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1F4E5E;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .stat-trend {
+        font-size: 0.7rem;
+        color: #2e7d5e;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* Section Header */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a3b44;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: #1F4E5E;
+        font-size: 1.2rem;
+    }
+
+    /* Counselor Cards Grid */
+    .counselors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .counselor-card {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #edf4f8;
+        transition: all 0.2s;
+        overflow: hidden;
+    }
+
+    .counselor-card:hover {
+        box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .counselor-header {
+        background: linear-gradient(135deg, #f8fbfc 0%, #f0f6fa 100%);
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #eef3f7;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .counselor-avatar {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.3rem;
+    }
+
+    .counselor-info h6 {
+        margin: 0;
+        font-weight: 600;
+        color: #1a3b44;
+        font-size: 1rem;
+    }
+
+    .counselor-info small {
+        font-size: 0.7rem;
+        color: #7c9aa6;
+    }
+
+    .counselor-stats {
+        padding: 1rem 1.25rem;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-bottom: 1px solid #eef3f7;
+    }
+
+    .stat-item {
+        text-align: center;
+        flex: 1;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1F4E5E;
+    }
+
+    .stat-item-label {
+        font-size: 0.65rem;
+        color: #8fb0bb;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .counselor-footer {
+        padding: 0.75rem 1.25rem;
+        background: #fafcfd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .completion-badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 1rem;
+        background: #e3f5ec;
+        color: #2e7d5e;
+        font-weight: 500;
+    }
+
+    /* Recent Activity Section */
+    .recent-section {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #edf4f8;
+        overflow: hidden;
+        margin-top: 1rem;
+    }
+
+    .recent-header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #eef3f7;
+        background: #fafcfd;
+    }
+
+    .activity-list {
+        padding: 0.5rem 0;
+    }
+
+    .activity-item {
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 1px solid #f0f6fa;
+        transition: 0.2s;
+    }
+
+    .activity-item:hover {
+        background: #fafcfd;
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        background: #f0f6fa;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1F4E5E;
+        font-size: 1rem;
+    }
+
+    .activity-details {
+        flex: 1;
+    }
+
+    .activity-text {
+        font-size: 0.85rem;
+        color: #1a3b44;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .activity-subtext {
+        font-size: 0.7rem;
+        color: #8fb0bb;
+        margin: 0;
+    }
+
+    .activity-value {
+        font-weight: 700;
+        color: #1F4E5E;
+        font-size: 1rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #8fb0bb;
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #edf4f8;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        color: #cde0e7;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .welcome-section {
+            flex-direction: column;
+            text-align: center;
+        }
+        .counselors-grid {
+            grid-template-columns: 1fr;
+        }
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        .counselor-stats {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+    }
 </style>
 
 <div class="principal-container">
-
-    <!-- Header -->
-    <div class="principal-header">
-        <h2>Principal Dashboard</h2>
-        <a href="{% url 'booking:counselor_logout' %}" class="logout-btn">
-            Logout
-        </a>
+    
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-text">
+            <h2>Welcome, {{ request.user.first_name|default:request.user.username }}</h2>
+            <p><i class="fas fa-chart-line me-1"></i> Institutional overview & counselling analytics</p>
+        </div>
+        <div class="welcome-badge">
+            <i class="fas fa-university"></i>
+            <span>Principal Access</span>
+        </div>
     </div>
 
-    <!-- Action Cards -->
-    <div class="action-cards">
-
+    <!-- Quick Actions -->
+    <div class="quick-actions">
         <a href="{% url 'booking:add_counselor' %}" class="action-card">
-            <h5>➕ Add Counselor</h5>
+            <div class="action-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="action-info">
+                <h5>Add Counselor</h5>
+                <small>Onboard new counselling staff</small>
+            </div>
         </a>
 
-       <a href="{%url 'booking:principal_analytics'%}"  class="action-card">
-            <h5>📈 Analytics Dashboard</h5>
+        <a href="{% url 'booking:principal_analytics' %}" class="action-card">
+            <div class="action-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="action-info">
+                <h5>Analytics Dashboard</h5>
+                <small>Deep dive into counselling metrics</small>
+            </div>
         </a>
-
-      
     </div>
 
-    <!-- Overall Stats -->
-    <div class="stats">
-        <div class="stat-card">
-            <h6>Total Bookings</h6>
-            <h3>{{ total_bookings }}</h3>
+    <!-- Key Stats -->
+    <div class="stats-grid">
+        <div class="stat-card-modern">
+            <div class="stat-label">
+                <i class="fas fa-calendar-check"></i> TOTAL BOOKINGS
+            </div>
+            <div class="stat-value">{{ total_bookings }}</div>
+            <div class="stat-trend">
+                <i class="fas fa-chart-line"></i> All-time sessions
+            </div>
         </div>
 
-        <div class="stat-card">
-            <h6>Attended</h6>
-            <h3>{{ attended }}</h3>
+        <div class="stat-card-modern">
+            <div class="stat-label">
+                <i class="fas fa-check-circle"></i> ATTENDED
+            </div>
+            <div class="stat-value">{{ attended }}</div>
+            <div class="stat-trend">
+                <i class="fas fa-percent"></i> 
+                {% if total_bookings > 0 %}
+                    {% widthratio attended total_bookings 100 %}% completion rate
+                {% else %}
+                    0% completion rate
+                {% endif %}
+            </div>
         </div>
 
-        <div class="stat-card">
-            <h6>Not Attended</h6>
-            <h3>{{ not_attended }}</h3>
+        <div class="stat-card-modern">
+            <div class="stat-label">
+                <i class="fas fa-times-circle"></i> NOT ATTENDED
+            </div>
+            <div class="stat-value">{{ not_attended }}</div>
+            <div class="stat-trend">
+                <i class="fas fa-clock"></i> Pending/Missed sessions
+            </div>
+        </div>
+
+        <div class="stat-card-modern">
+            <div class="stat-label">
+                <i class="fas fa-chalkboard-user"></i> ACTIVE COUNSELORS
+            </div>
+            <div class="stat-value">{{ per_counselor|length }}</div>
+            <div class="stat-trend">
+                <i class="fas fa-users"></i> Counselling staff
+            </div>
         </div>
     </div>
 
-    <!-- Counselor Reports -->
-    <div class="report-section">
-        <h4>📋 Bookings per Counselor</h4>
+    <!-- Counselor Performance Section -->
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-chalkboard-user"></i>
+            Counselor Performance
+        </div>
+        <small style="color: #8fb0bb;">
+            <i class="fas fa-chart-simple"></i> Bookings per counselor
+        </small>
+    </div>
 
-        {% for row in per_counselor %}
-            <div class="report-card">
-                <div>
-                    <strong>{{ row.slot__counselor__username }}</strong>
+    {% if per_counselor %}
+        <div class="counselors-grid">
+            {% for row in per_counselor %}
+                <div class="counselor-card">
+                    <div class="counselor-header">
+                        <div class="counselor-avatar">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="counselor-info">
+                            <h6>{{ row.slot__counselor__username|default:"Unassigned" }}</h6>
+                            <small>
+                                <i class="fas fa-calendar-alt"></i> 
+                                Counselor
+                            </small>
+                        </div>
+                    </div>
+                    <div class="counselor-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">{{ row.total }}</div>
+                            <div class="stat-item-label">Total Bookings</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">{{ row.attended|default:0 }}</div>
+                            <div class="stat-item-label">Attended</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">{{ row.pending|default:0 }}</div>
+                            <div class="stat-item-label">Pending</div>
+                        </div>
+                    </div>
+                    <div class="counselor-footer">
+                        <div class="completion-badge">
+                            <i class="fas fa-chart-line"></i> 
+                            {% if row.total > 0 %}
+                                {% widthratio row.attended|default:0 row.total 100 %}% completion
+                            {% else %}
+                                0% completion
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    {{ row.total }} Bookings
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-chalkboard-user"></i>
+            <p>No counselor data available yet.</p>
+            <small style="color: #8fb0bb;">Add counselors to see performance metrics</small>
+        </div>
+    {% endif %}
+
+    <!-- Recent Insights Section -->
+    <div class="section-header" style="margin-top: 1rem;">
+        <div class="section-title">
+            <i class="fas fa-chart-simple"></i>
+            Key Insights
+        </div>
+    </div>
+
+    <div class="recent-section">
+        <div class="recent-header">
+            <small style="color: #7c9aa6;">
+                <i class="fas fa-info-circle"></i> Counselling program summary
+            </small>
+        </div>
+        <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-calendar-week"></i>
+                </div>
+                <div class="activity-details">
+                    <p class="activity-text">Total counselling sessions</p>
+                    <p class="activity-subtext">All-time bookings across all counselors</p>
+                </div>
+                <div class="activity-value">{{ total_bookings }}</div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-percent"></i>
+                </div>
+                <div class="activity-details">
+                    <p class="activity-text">Overall attendance rate</p>
+                    <p class="activity-subtext">Students who attended their sessions</p>
+                </div>
+                <div class="activity-value">
+                    {% if total_bookings > 0 %}
+                        {% widthratio attended total_bookings 100 %}%
+                    {% else %}
+                        0%
+                    {% endif %}
                 </div>
             </div>
-        {% empty %}
-            <p class="text-muted">No bookings yet.</p>
-        {% endfor %}
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="activity-details">
+                    <p class="activity-text">Average sessions per counselor</p>
+                    <p class="activity-subtext">Based on active counselors</p>
+                </div>
+                <div class="activity-value">
+                    {% if per_counselor|length > 0 %}
+                        {% widthratio total_bookings per_counselor|length 1 %}
+                    {% else %}
+                        0
+                    {% endif %}
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="activity-details">
+                    <p class="activity-text">Top counselor</p>
+                    <p class="activity-subtext">Highest number of bookings</p>
+                </div>
+                <div class="activity-value">
+                    {% if per_counselor %}
+                        {% with top_counselor=per_counselor|dictsortreversed:"total"|first %}
+                            {{ top_counselor.slot__counselor__username|default:"N/A" }}
+                        {% endwith %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 
-  
 </div>
 
+<script>
+    (function() {
+        console.log("Principal Dashboard loaded - Institutional Overview");
+    })();
+</script>
 {% endblock %}

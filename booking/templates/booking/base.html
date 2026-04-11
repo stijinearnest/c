@@ -2,84 +2,517 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Counselling System{% endblock %}</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>{% block title %}CounselLink | College Counselling System{% endblock %}</title>
 
-    <!-- Bootstrap 5 (Keep for grid utilities) -->
+    <!-- Google Fonts + modern font stack -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Bootstrap 5 CSS (minimal, used for grid and utilities) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: #d7e3ea;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            position: relative;
         }
 
-        /* Top Navbar */
-        .custom-navbar {
-            background: #2e5e6e;
-            padding: 14px 0;
+        /* subtle background gradient */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(31,78,94,0.04) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .navbar-brand {
-            color: white !important;
-            font-weight: 600;
-            letter-spacing: .5px;
-            font-size: 18px;
+        /* ========== PROFESSIONAL NAVBAR ========== */
+        .top-nav {
+            background: #ffffff;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.03);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
         }
 
-        /* Main container */
-        .main-container {
-            background: #f4f8fb;
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            min-height: 80vh;
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0.75rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        /* Buttons override */
-        .btn-primary {
-            background-color: #2e5e6e;
-            border-color: #2e5e6e;
+        /* Left section: Back button + Brand */
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
         }
 
-        .btn-primary:hover {
-            background-color: #254d59;
-            border-color: #254d59;
+        /* Back button - prominent in top-left corner */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: #f8fafc;
+            border: 1px solid #e4edf2;
+            color: #446c7a;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
 
-        .btn-outline-primary {
-            color: #2e5e6e;
-            border-color: #2e5e6e;
+        .back-button i {
+            font-size: 0.8rem;
         }
 
-        .btn-outline-primary:hover {
-            background-color: #2e5e6e;
+        .back-button:hover {
+            background: #eef3f7;
+            border-color: #cde0e7;
+            color: #1F4E5E;
+            transform: translateX(-2px);
+            text-decoration: none;
+        }
+
+        /* Brand area */
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFE5B4;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .brand-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.3px;
+            color: #1a3b44;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .brand-text:hover {
+            color: #1F4E5E;
+            text-decoration: none;
+        }
+
+        .brand-sub {
+            font-size: 0.7rem;
+            color: #7c9aa6;
+            margin-left: 0.25rem;
+            font-weight: 400;
+        }
+
+        /* Navigation links group (right side) */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: transparent;
+            color: #446c7a;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-link-item i {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .nav-link-item:hover {
+            background: #f0f4f8;
+            color: #1F4E5E;
+            text-decoration: none;
+        }
+
+        .nav-link-item.primary-link {
+            background: #1F4E5E;
             color: white;
         }
 
-        .card {
-            border-radius: 16px;
-            border: none;
-            background: white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        .nav-link-item.primary-link:hover {
+            background: #0f3e4b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(31,78,94,0.2);
         }
 
+        .nav-link-item.danger-link {
+            color: #c24a3a;
+        }
+
+        .nav-link-item.danger-link:hover {
+            background: #fee9e6;
+            color: #b33a2a;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: #f8fafc;
+            padding: 0.35rem 1rem 0.35rem 0.8rem;
+            border-radius: 2.5rem;
+            border: 1px solid #e4edf2;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #eef3f7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1F4E5E;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1a3b44;
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: #7c9aa6;
+            font-weight: 400;
+        }
+
+        /* Divider */
+        .divider-vertical {
+            width: 1px;
+            height: 28px;
+            background: #e2edf2;
+            margin: 0 0.25rem;
+        }
+
+        /* ========== MAIN CONTAINER ========== */
+        .main-wrapper {
+            max-width: 1400px;
+            margin: 1.75rem auto;
+            padding: 0 2rem;
+        }
+
+        .content-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.01);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .content-inner {
+            padding: 2rem 2rem;
+        }
+
+        /* page header / breadcrumb area */
+        .page-header {
+            margin-bottom: 1.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eef3f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a3b44;
+            letter-spacing: -0.3px;
+            margin: 0;
+        }
+
+        /* Global button styles */
+        .btn-custom-primary {
+            background: #1F4E5E;
+            border: none;
+            border-radius: 1.75rem;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        .btn-custom-primary:hover {
+            background: #0f3e4b;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(31,78,94,0.2);
+        }
+
+        .btn-custom-outline {
+            background: transparent;
+            border: 1px solid #cde0e7;
+            border-radius: 1.75rem;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            color: #446c7a;
+            transition: all 0.2s;
+        }
+
+        .btn-custom-outline:hover {
+            border-color: #1F4E5E;
+            color: #1F4E5E;
+            background: #f8fbfc;
+        }
+
+        /* cards */
+        .stat-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            border: 1px solid #edf4f8;
+            transition: all 0.2s;
+        }
+
+        /* responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0.75rem 1.25rem;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .nav-left {
+                justify-content: space-between;
+            }
+            .content-inner {
+                padding: 1.25rem;
+            }
+            .main-wrapper {
+                padding: 0 1.25rem;
+                margin: 1rem auto;
+            }
+            .user-info {
+                display: none;
+            }
+            .user-profile {
+                padding: 0.35rem 0.8rem;
+            }
+            .brand-text {
+                font-size: 1rem;
+            }
+            .nav-links {
+                justify-content: flex-end;
+            }
+        }
+
+        /* micro-animations */
+        .fade-slide {
+            animation: fadeSlideUp 0.3s ease-out;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* flash messages styling */
+        .alert-custom {
+            border-radius: 1rem;
+            border: none;
+            font-size: 0.85rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+        }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
 
-<nav class="navbar custom-navbar shadow">
-    <div class="container">
-        <a class="navbar-brand" href="/">College Counselling System</a>
-    </div>
-</nav>
+<!-- PROFESSIONAL NAVBAR with BACK button on TOP-LEFT corner -->
+<header class="top-nav">
+    <div class="nav-container">
+        <!-- LEFT section: Back button + Brand (back button is first, most left) -->
+        <div class="nav-left">
+            <!-- BACK BUTTON - prominent in top-left corner -->
+            <button onclick="history.back()" class="back-button" aria-label="Go back">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
 
-<div class="container my-4">
-    <div class="main-container">
-        {% block content %}
-        {% endblock %}
-    </div>
-</div>
+            <!-- Brand identity -->
+            <div class="brand-area">
+                <div class="brand-icon">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <div>
+                    <a href="/" class="brand-text">
+                        CounselLink <span class="brand-sub">| college counselling</span>
+                    </a>
+                </div>
+            </div>
+        </div>
 
+        <!-- RIGHT section: navigation actions + user area -->
+        <div class="nav-links">
+            <!-- DASHBOARD links - role based -->
+            {% if request.session.student %}
+                <a href="{% url 'booking:student_dashboard' %}" class="nav-link-item">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+            {% elif request.user.is_authenticated %}
+                {% for group in request.user.groups.all %}
+                    {% if group.name == "Principal" %}
+                        <a href="{% url 'booking:principal_dashboard' %}" class="nav-link-item">
+                            <i class="fas fa-chalkboard-user"></i> Principal Hub
+                        </a>
+                    {% elif group.name == "Counselor" %}
+                        <a href="{% url 'booking:counselor_dashboard' %}" class="nav-link-item">
+                            <i class="fas fa-clipboard-list"></i> Counselor Desk
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <!-- Vertical divider (only when user logged in) -->
+            {% if request.session.student or request.user.is_authenticated %}
+                <span class="divider-vertical"></span>
+            {% endif %}
+
+            <!-- USER PROFILE area (modern pill) -->
+            {% if request.session.student %}
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <div class="user-info">{{ request.session.student.name|truncatechars:18 }}</div>
+                        <div class="user-role">Student</div>
+                    </div>
+                </div>
+                <a href="{% url 'booking:student_logout' %}" class="nav-link-item danger-link">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+
+            {% elif request.user.is_authenticated %}
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div>
+                        <div class="user-info">{{ request.user.username }}</div>
+                        <div class="user-role">
+                            {% for group in request.user.groups.all %}
+                                {{ group.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'booking:counselor_logout' %}" class="nav-link-item danger-link">
+                    <i class="fas fa-lock-open"></i> Logout
+                </a>
+            {% else %}
+                <!-- subtle login hint (optional) -->
+                <a href="{% url 'booking:student_login' %}" class="nav-link-item primary-link">
+                    <i class="fas fa-sign-in-alt"></i> Staff Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<!-- MAIN CONTENT AREA with improved structure -->
+<main class="main-wrapper">
+    
+            <!-- Optional page header block (child templates can override) -->
+            {% block page_header %}
+                {% if page_title %}
+                <div class="page-header">
+                    <h1 class="page-title">{{ page_title }}</h1>
+                    {% block header_actions %}{% endblock %}
+                </div>
+                {% endif %}
+            {% endblock %}
+
+            <!-- Django messages / flash alerts -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-custom alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert" style="background: #fef7e0; border-left: 4px solid #f5b042;">
+                        <i class="fas fa-info-circle me-2"></i> {{ message }}
+                        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Primary content injected from child templates -->
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap JS (for toggles, alerts) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- optional global utilities -->
+<script>
+    (function() {
+        // Add smooth entrance for main container
+        document.querySelectorAll('.alert').forEach(el => {
+            el.classList.add('fade-slide');
+        });
+        // optional: any interactive enhancements
+        console.log('CounselLink · professional base layout with back button top-left');
+    })();
+</script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

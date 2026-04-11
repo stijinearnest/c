@@ -1,79 +1,439 @@
 {% extends "booking/base.html" %}
-{% block title %}Book Session{% endblock %}
+{% block title %}Book Session | CounselLink{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-8 col-md-10">
+<style>
+    .booking-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
 
-        <div class="card p-4 shadow-sm">
+    /* Main Card */
+    .booking-card {
+        background: white;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+    }
 
-            <h3 class="mb-3">Book Session</h3>
+    .card-header {
+        padding: 1.5rem 1.75rem;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        color: white;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-header h3 i {
+        color: #FFE5B4;
+        font-size: 1.4rem;
+    }
+
+    .card-header p {
+        margin: 0.5rem 0 0 0;
+        font-size: 0.8rem;
+        opacity: 0.85;
+    }
+
+    .card-body {
+        padding: 1.75rem;
+    }
+
+    /* Emergency Alert */
+    .emergency-alert {
+        background: linear-gradient(135deg, #fff5f5 0%, #fee9e6 100%);
+        border-left: 4px solid #dc7a6e;
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .emergency-icon {
+        width: 44px;
+        height: 44px;
+        background: #dc7a6e;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: white;
+    }
+
+    .emergency-content {
+        flex: 1;
+    }
+
+    .emergency-content strong {
+        color: #c24a3a;
+        font-size: 0.9rem;
+        display: block;
+        margin-bottom: 0.2rem;
+    }
+
+    .emergency-content p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #8b5a52;
+    }
+
+    /* Session Info Card */
+    .session-info-card {
+        background: #f8fbfc;
+        border-radius: 1rem;
+        padding: 1.25rem;
+        margin-bottom: 1.75rem;
+        border: 1px solid #eef3f7;
+    }
+
+    .info-title {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        color: #7c9aa6;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .info-item i {
+        width: 32px;
+        height: 32px;
+        background: white;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1F4E5E;
+        font-size: 0.9rem;
+    }
+
+    .info-label {
+        font-size: 0.7rem;
+        color: #8fb0bb;
+        display: block;
+    }
+
+    .info-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1a3b44;
+    }
+
+    /* Form Styling */
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #446c7a;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.3px;
+    }
+
+    .form-group label i {
+        margin-right: 0.4rem;
+        color: #8fb0bb;
+        width: 1rem;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border: 1.5px solid #e2edf2;
+        border-radius: 0.75rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        background: #fefefe;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: #1F4E5E;
+        box-shadow: 0 0 0 3px rgba(31,78,94,0.1);
+        background: white;
+    }
+
+    select.form-control-custom {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237c9aa6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+    }
+
+    /* Form Row */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eef3f7;
+    }
+
+    .btn-cancel {
+        padding: 0.7rem 1.5rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: transparent;
+        border: 1.5px solid #e2edf2;
+        color: #7c9aa6;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-cancel:hover {
+        background: #f8fbfc;
+        border-color: #cde0e7;
+        color: #446c7a;
+        text-decoration: none;
+    }
+
+    .btn-confirm {
+        padding: 0.7rem 2rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border: none;
+        color: white;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .btn-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px -6px rgba(31,78,94,0.4);
+        background: linear-gradient(135deg, #164854 0%, #0f3642 100%);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .card-header {
+            padding: 1.25rem;
+        }
+        .card-body {
+            padding: 1.25rem;
+        }
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .info-details {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .action-buttons {
+            flex-direction: column;
+        }
+        .btn-cancel, .btn-confirm {
+            justify-content: center;
+        }
+        .emergency-alert {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="booking-container">
+    <div class="booking-card">
+        
+        <!-- Card Header -->
+        <div class="card-header">
+            <h3>
+                <i class="fas fa-calendar-plus"></i>
+                Book Counselling Session
+            </h3>
+            <p><i class="fas fa-info-circle"></i> Please review the session details before confirming</p>
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
             
+            <!-- 🚨 Emergency Banner (only if emergency booking) -->
+            {% if is_emergency %}
+            <div class="emergency-alert">
+                <div class="emergency-icon">
+                    <i class="fas fa-triangle-exclamation"></i>
+                </div>
+                <div class="emergency-content">
+                    <strong>🚨 Emergency Booking</strong>
+                    <p>This slot is automatically assigned and may reschedule another student's appointment.</p>
+                </div>
+            </div>
+            {% endif %}
 
-            <!-- Session Info -->
-            <div class="mb-4 p-3 rounded" style="background:#f1f5f7;">
-                <p class="mb-1"><strong>Counselor:</strong> {{ slot.counselor.username }}</p>
-                <p class="mb-1"><strong>Date:</strong> {{ slot.date }}</p>
-                <p class="mb-0"><strong>Time:</strong> {{ session_start }}</p>
+            <!-- Session Information Card -->
+            <div class="session-info-card">
+                <div class="info-title">
+                    <i class="fas fa-clock"></i> SESSION DETAILS
+                </div>
+                <div class="info-details">
+                    <div class="info-item">
+                        <i class="fas fa-chalkboard-user"></i>
+                        <div>
+                            <span class="info-label">Counselor</span>
+                            <span class="info-value">{{ slot.counselor.username }}</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div>
+                            <span class="info-label">Date</span>
+                            <span class="info-value">{{ slot.date }}</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="info-label">Time</span>
+                            <span class="info-value">{{ session_start }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
+            <!-- Booking Form -->
             <form method="post">
                 {% csrf_token %}
 
-                <!-- Student Name & Email -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Student Name</label>
+                <!-- Student Name & Email Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.student_name.id_for_label }}">
+                            <i class="fas fa-user-graduate"></i> Full Name
+                        </label>
                         {{ form.student_name }}
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Student Email</label>
+                    <div class="form-group">
+                        <label for="{{ form.student_email.id_for_label }}">
+                            <i class="fas fa-envelope"></i> Email Address
+                        </label>
                         {{ form.student_email }}
                     </div>
                 </div>
 
-                <!-- Department & Year -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Department</label>
+                <!-- Department & Year Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.student_department.id_for_label }}">
+                            <i class="fas fa-building"></i> Department
+                        </label>
                         {{ form.student_department }}
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Year</label>
+                    <div class="form-group">
+                        <label for="{{ form.student_year.id_for_label }}">
+                            <i class="fas fa-graduation-cap"></i> Year of Study
+                        </label>
                         {{ form.student_year }}
                     </div>
                 </div>
 
-                <!-- Emergency Option -->
-                <div class="form-check mt-3 p-3 rounded"
-                     style="background:#fff3f3; border-left:4px solid #dc3545;">
-                    {{ form.is_emergency }}
-                    <label for="{{ form.is_emergency.id_for_label }}"
-                           class="form-check-label fw-bold text-danger">
-                        🚨 Emergency Booking
-                    </label>
-                    <div class="small text-muted mt-1">
-                        Selecting this will reschedule an existing booking if necessary.
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="mt-4 d-flex justify-content-between">
-                    <a href="{% url 'booking:student_dashboard' %}"
-                       class="btn btn-outline-secondary">
-                        Cancel
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="{% url 'booking:student_dashboard' %}" class="btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
                     </a>
 
-                    <button type="submit" class="btn btn-primary px-4">
-                        Confirm Booking
+                    <button type="submit" class="btn-confirm">
+                        <i class="fas fa-check-circle"></i> Confirm Booking
                     </button>
                 </div>
 
             </form>
         </div>
-
     </div>
 </div>
+
+<!-- Add CSS classes to form fields for consistent styling -->
+<script>
+    (function() {
+        // Apply custom classes to all form inputs for consistent styling
+        const formInputs = document.querySelectorAll('input, select');
+        formInputs.forEach(input => {
+            if (!input.classList.contains('form-control-custom')) {
+                input.classList.add('form-control-custom');
+            }
+        });
+        
+        // Add placeholder attributes if needed
+        const nameInput = document.querySelector('input[name="student_name"]');
+        if (nameInput && !nameInput.placeholder) {
+            nameInput.placeholder = "Enter your full name";
+        }
+        
+        const emailInput = document.querySelector('input[name="student_email"]');
+        if (emailInput && !emailInput.placeholder) {
+            emailInput.placeholder = "your.email@college.edu";
+        }
+        
+        const deptSelect = document.querySelector('select[name="student_department"]');
+        if (deptSelect && !deptSelect.querySelector('option[value=""]')) {
+            const option = document.createElement('option');
+            option.value = "";
+            option.textContent = "Select Department";
+            option.disabled = true;
+            option.selected = true;
+            deptSelect.insertBefore(option, deptSelect.firstChild);
+        }
+        
+        const yearSelect = document.querySelector('select[name="student_year"]');
+        if (yearSelect && !yearSelect.querySelector('option[value=""]')) {
+            const option = document.createElement('option');
+            option.value = "";
+            option.textContent = "Select Year";
+            option.disabled = true;
+            option.selected = true;
+            yearSelect.insertBefore(option, yearSelect.firstChild);
+        }
+    })();
+</script>
 {% endblock %}

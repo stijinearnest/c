@@ -78,13 +78,13 @@ def student_dashboard(request):
     student = request.session.get('student')
     if not student:
         return redirect('booking:student_login')
-    # show all future slots and their 15-min sessions that are free
+
     slots = Slot.objects.filter(date__gte=datetime.date.today()).order_by('date', 'start_time')
-    # build a structure for available sessions
+
     available = []
+
     for slot in slots:
         for sstart, send in slot.generate_sessions():
-            # check if that session is booked
             booked = Booking.objects.filter(slot=slot, session_start=sstart).exists()
             if not booked:
                 available.append({
@@ -92,23 +92,81 @@ def student_dashboard(request):
                     'session_start': sstart.strftime('%H:%M:%S'),
                     'session_end': send.strftime('%H:%M:%S'),
                 })
-    return render(request, 'booking/student_dashboard.html', {'student': student, 'available': available})
+
+    # 🔥 NEW: FIND EMERGENCY SLOT
+    all_sessions = get_all_future_sessions()
+    emergency_slot = None
+
+    for session in all_sessions:
+        existing = Booking.objects.filter(
+            slot=session['slot'],
+            session_start=session['session_start']
+        ).first()
+
+        # ✅ FREE SLOT
+        if not existing:
+            emergency_slot = session
+            break
+
+        # ❌ Skip if already emergency
+        if existing.is_emergency:
+            continue
+
+        # 🔁 Can displace normal booking
+        emergency_slot = session
+        break
+
+    return render(request, 'booking/student_dashboard.html', {
+        'student': student,
+        'available': available,
+        'emergency_slot': emergency_slot   # 🔥 PASS THIS
+    })
 def book_session(request, slot_id, session_start):
-    
 
     student_in_session = request.session.get('student')
-    slot = get_object_or_404(Slot, id=slot_id)
 
-    sstart = datetime.datetime.strptime(
-        session_start, '%H:%M:%S'
-    ).time()
+    # 🔥 Detect emergency booking
+    is_emergency_request = request.GET.get("emergency") == "true"
 
+    slot = None
+    sstart = None
+
+    # ================================
+    # 🟢 NORMAL BOOKING
+    # ================================
+    if not is_emergency_request:
+        slot = get_object_or_404(Slot, id=slot_id)
+        sstart = datetime.datetime.strptime(session_start, '%H:%M:%S').time()
+
+    # ================================
+    # 🚨 EMERGENCY BOOKING (PREVIEW SLOT)
+    # ================================
+    else:
+        all_sessions = get_all_future_sessions()
+
+        for session in all_sessions:
+            existing = Booking.objects.filter(
+                slot=session['slot'],
+                session_start=session['session_start']
+            ).first()
+
+            # Take first free OR replaceable slot
+            if not existing or not existing.is_emergency:
+                slot = session['slot']
+                sstart = session['session_start']
+                break
+
+    # ================================
+    # 📩 FORM SUBMISSION
+    # ================================
     if request.method == 'POST':
         form = BookingForm(request.POST)
 
         if form.is_valid():
             b = form.save(commit=False)
-            b.is_emergency = form.cleaned_data.get('is_emergency', False)
+
+            # 🔥 FORCE emergency mode (NO checkbox dependency)
+            b.is_emergency = is_emergency_request
 
             # -----------------------------------------
             # 🔹 CREATE OR UPDATE STUDENT PROFILE
@@ -121,7 +179,6 @@ def book_session(request, slot_id, session_start):
                 defaults={'name': student_name}
             )
 
-            # If existing student but name changed → update
             if not created and student.name != student_name:
                 student.name = student_name
                 student.save()
@@ -147,7 +204,7 @@ def book_session(request, slot_id, session_start):
                         session_start=start_time
                     ).first()
 
-                    # ✅ FREE SLOT → assign immediately
+                    # ✅ FREE SLOT
                     if not existing_booking:
                         b.slot = slot_obj
                         b.session_start = start_time
@@ -155,14 +212,13 @@ def book_session(request, slot_id, session_start):
                         assigned = True
                         break
 
-                    # ⚠ If existing is EMERGENCY → skip
+                    # ❌ Skip emergency
                     if existing_booking.is_emergency:
                         continue
 
-                    # 🔁 Try to reschedule NORMAL booking
+                    # 🔁 Displace normal booking
                     displaced = existing_booking
 
-                    # Look for next available future session
                     next_free = None
 
                     for future in all_sessions:
@@ -179,16 +235,17 @@ def book_session(request, slot_id, session_start):
                             break
 
                     if next_free:
-                        # Save original details
+                        # 🔥 Save old details
                         old_date = displaced.slot.date
                         old_time = displaced.session_start
 
+                        # 🔁 Move booking
                         displaced.slot = next_free['slot']
                         displaced.session_start = next_free['session_start']
                         displaced.session_end = next_free['session_end']
                         displaced.save()
 
-                        # Send email
+                        # 📧 SEND EMAIL (RESTORED)
                         send_mail(
                             "Your Counseling Appointment Has Been Rescheduled",
                             f"""
@@ -208,7 +265,7 @@ Counseling Team
                             fail_silently=True,
                         )
 
-                        # Assign emergency booking
+                        # 🚨 Assign emergency slot
                         b.slot = slot_obj
                         b.session_start = start_time
                         b.session_end = end_time
@@ -216,24 +273,15 @@ Counseling Team
                         break
 
                 if not assigned:
-                    messages.error(
-                        request,
-                        "No available slots for emergency booking."
-                    )
+                    messages.error(request, "No available slots for emergency booking.")
                     return redirect('booking:student_dashboard')
 
             # =========================================
             # 🟢 NORMAL BOOKING LOGIC
             # =========================================
             else:
-                if Booking.objects.filter(
-                    slot=slot,
-                    session_start=sstart
-                ).exists():
-                    messages.error(
-                        request,
-                        "Sorry, this session was just booked."
-                    )
+                if Booking.objects.filter(slot=slot, session_start=sstart).exists():
+                    messages.error(request, "Sorry, this session was just booked.")
                     return redirect('booking:student_dashboard')
 
                 b.slot = slot
@@ -243,15 +291,8 @@ Counseling Team
                     + datetime.timedelta(minutes=60)
                 ).time()
 
-            # =========================================
             # 💾 SAVE BOOKING
-            # =========================================
             b.save()
-
-            request.session['student'] = {
-                'name': b.student.name,
-                'email': b.student.email
-            }
 
             messages.success(
                 request,
@@ -260,6 +301,9 @@ Counseling Team
 
             return redirect('booking:student_dashboard')
 
+    # ================================
+    # 🧾 FORM LOAD (GET)
+    # ================================
     else:
         initial = {}
         if student_in_session:
@@ -274,10 +318,10 @@ Counseling Team
         {
             'form': form,
             'slot': slot,
-            'session_start': sstart
+            'session_start': sstart,
+            'is_emergency': is_emergency_request
         }
     )
-
 @login_required
 def counselor_logout(request):
     logout(request)
@@ -310,13 +354,47 @@ def add_slot(request):
 def counselor_bookings(request):
     # show bookings for upcoming slots
     bookings = Booking.objects.filter(slot__counselor=request.user, slot__date__gte=datetime.date.today()).order_by('slot__date', 'session_start')
-    return render(request, 'booking/counselor_bookings.html', {'bookings': bookings})
+  # Your bookings queryset
+    
+    context = {
+        'bookings': bookings,
+        'pending_count': bookings.filter(attended=False).count(),
+        'emergency_count': bookings.filter(is_emergency=True).count(),
+    }
+  
+    return render(request, 'booking/counselor_bookings.html', context)
+
 
 @login_required
 def counselor_history(request):
-    bookings = Booking.objects.filter(slot__counselor=request.user).order_by('-slot__date', '-session_start')
-    return render(request, 'booking/counselor_history.html', {'bookings': bookings})
 
+    selected_date = request.GET.get("date")
+
+    # 🎯 Default = TODAY
+    if selected_date:
+        bookings = Booking.objects.filter(
+            slot__counselor=request.user,
+            slot__date=selected_date
+        )
+    else:
+        today = timezone.now().date()
+        bookings = Booking.objects.filter(
+            slot__counselor=request.user,
+            slot__date=today
+        )
+        selected_date = today  # for template
+
+    bookings = bookings.order_by('-session_start')
+    context = {
+        'bookings': bookings,
+        'selected_date': selected_date,
+        'attended_count': bookings.filter(attended=True).count(),
+        'pending_count': bookings.filter(attended=False).count(),
+        'bookings_with_remarks': bookings.exclude(counselor_remark__isnull=True).exclude(counselor_remark__exact='').count(),
+    }
+    return render(request, 'booking/counselor_history.html', context)
+
+   
 @login_required
 def add_remark(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, slot__counselor=request.user)
@@ -331,12 +409,20 @@ def add_remark(request, booking_id):
 
 def staff_login_view(request):
 
+    # 🟢 If already logged in → redirect to dashboard (DON'T logout)
+    if request.method == "GET" and request.user.is_authenticated:
+        if request.user.groups.filter(name="Principal").exists():
+            return redirect('booking:principal_dashboard')
+        elif request.user.groups.filter(name="Counselor").exists():
+            return redirect('booking:counselor_dashboard')
+
+    # 🔵 Handle login form
     if request.method == 'POST':
         form = CounselorLoginForm(data=request.POST)
 
         if form.is_valid():
 
-            # 🔥 Only NOW logout old user (after CSRF passed)
+            # 🔥 Logout existing user ONLY when switching accounts
             if request.user.is_authenticated:
                 logout(request)
 
@@ -359,6 +445,7 @@ def staff_login_view(request):
             messages.error(request, "Invalid credentials.")
             return redirect('booking:home')
 
+    # 🧾 Show login page
     return render(request, 'booking/unified_login.html')
 @principal_required
 def principal_dashboard(request):
@@ -366,21 +453,25 @@ def principal_dashboard(request):
     attended = Booking.objects.filter(attended=True).count()
     not_attended = total_bookings - attended
 
-    per_counselor = (
-        Booking.objects
-        .values('slot__counselor__username')
-        .annotate(total=Count('id'))
-        .order_by('-total')
-    )
     counselors = User.objects.filter(groups__name="Counselor")
-
-    return render(request, 'booking/principal_dashboard.html', {
+    per_counselor = []
+    for counselor in counselors:
+        bookings = Booking.objects.filter(slot__counselor=counselor)
+        per_counselor.append({
+            'slot__counselor__username': counselor.username,
+            'total': bookings.count(),
+            'attended': bookings.filter(attended=True).count(),
+            'pending': bookings.filter(attended=False).count(),
+            'first_booking_date': bookings.order_by('slot__date').first().slot.date if bookings.exists() else None,
+        })
+    
+    context = {
         'total_bookings': total_bookings,
         'attended': attended,
         'not_attended': not_attended,
         'per_counselor': per_counselor,
-        'counselors': counselors,
-    })
+    }
+    return render(request, 'booking/principal_dashboard.html', context)
 
 @principal_required
 
@@ -473,11 +564,14 @@ def student_detail(request, student_id):
         "-slot__date",
         "-session_start"
     )
-
-    return render(request, "booking/student_detail.html", {
-        "student": student,
-        "bookings": bookings
-    })
+    context = {
+        'student': student,
+        'bookings': bookings,
+        'attended_count': bookings.filter(attended=True).count(),
+        'pending_count': bookings.filter(attended=False).count(),
+    }
+    return render(request, 'booking/student_detail.html', context)
+   
 
 @principal_required
 def principal_analytics(request):

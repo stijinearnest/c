@@ -1,178 +1,407 @@
 {% extends "booking/base.html" %}
-{% block title %}Counselor Dashboard{% endblock %}
+{% block title %}Counselor Dashboard | CounselLink{% endblock %}
 
 {% block content %}
-
 <style>
-.dashboard-container {
-    padding: 30px 10px;
-}
+    /* Dashboard specific styles - modern & professional */
+    .dashboard-container {
+        max-width: 100%;
+    }
 
-/* Header */
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 35px;
-}
+    /* Welcome section with gradient accent */
+    .welcome-section {
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border-radius: 1.25rem;
+        padding: 1.75rem 2rem;
+        margin-bottom: 2rem;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
 
-.dashboard-header h2 {
-    color: #2e5e6e;
-    font-weight: 600;
-}
+    .welcome-text h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+        letter-spacing: -0.3px;
+    }
 
-.logout-btn {
-    background: #c94c4c;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 14px;
-    transition: 0.2s;
-}
+    .welcome-text p {
+        margin: 0;
+        opacity: 0.85;
+        font-size: 0.85rem;
+    }
 
-.logout-btn:hover {
-    background: #a63c3c;
-}
+    .welcome-badge {
+        background: rgba(255,255,245,0.15);
+        backdrop-filter: blur(4px);
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-/* Action Cards */
-.action-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-}
+    /* Quick Actions Grid - 4 modern cards */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
 
-.action-card {
-    background: #2e5e6e;
-    color: white;
-    padding: 22px;
-    border-radius: 16px;
-    text-decoration: none;
-    transition: 0.25s ease;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
+    .action-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.25rem;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid #edf4f8;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
 
-.action-card:hover {
-    background: #244d58;
-    transform: translateY(-4px);
-}
+    .action-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px -10px rgba(31,78,94,0.2);
+        border-color: #dce9f0;
+        text-decoration: none;
+    }
 
-.action-card h5 {
-    margin: 0;
-    font-weight: 500;
-}
+    .action-icon {
+        width: 48px;
+        height: 48px;
+        background: #f0f6fa;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: #1F4E5E;
+        transition: 0.2s;
+    }
 
-/* Stats */
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    margin-bottom: 35px;
-}
+    .action-card:hover .action-icon {
+        background: #1F4E5E;
+        color: white;
+    }
 
-.stat-card {
-    background: #f4f8fb;
-    padding: 22px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-}
+    .action-info h5 {
+        margin: 0 0 0.2rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1a3b44;
+    }
 
-.stat-card h6 {
-    color: #6c7a86;
-    font-size: 13px;
-    margin-bottom: 8px;
-}
+    .action-info small {
+        font-size: 0.7rem;
+        color: #7c9aa6;
+    }
 
-.stat-card h3 {
-    color: #2e5e6e;
-    margin: 0;
-}
+    /* Stats Row */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
 
-/* Slot Cards */
-.slot-section-title {
-    margin-bottom: 18px;
-    color: #2e5e6e;
-}
+    .stat-card-modern {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.25rem;
+        border: 1px solid #edf4f8;
+        transition: all 0.2s;
+    }
 
-.slot-card {
-    background: #ffffff;
-    border-left: 6px solid #2e5e6e;
-    padding: 18px 20px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-    transition: 0.2s;
-}
+    .stat-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        color: #7c9aa6;
+        margin-bottom: 0.5rem;
+    }
 
-.slot-card:hover {
-    transform: translateY(-2px);
-}
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1F4E5E;
+        margin: 0;
+        line-height: 1.2;
+    }
 
-.no-slots {
-    color: #6c7a86;
-}
+    .stat-sub {
+        font-size: 0.7rem;
+        color: #a0bcc7;
+        margin-top: 0.25rem;
+    }
+
+    /* Upcoming Slots Section */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a3b44;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: #1F4E5E;
+        font-size: 1.2rem;
+    }
+
+    .slot-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .slot-item {
+        background: white;
+        border-radius: 0.875rem;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        border: 1px solid #edf4f8;
+        transition: all 0.2s;
+    }
+
+    .slot-item:hover {
+        border-color: #d0e2ea;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .slot-date {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .date-badge {
+        background: #f0f6fa;
+        border-radius: 0.75rem;
+        padding: 0.5rem 0.9rem;
+        text-align: center;
+        min-width: 70px;
+    }
+
+    .date-day {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1F4E5E;
+        line-height: 1;
+    }
+
+    .date-month {
+        font-size: 0.65rem;
+        color: #7c9aa6;
+        text-transform: uppercase;
+    }
+
+    .slot-time {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #446c7a;
+        font-size: 0.9rem;
+    }
+
+    .slot-time i {
+        color: #8fb0bb;
+    }
+
+    .slot-status {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        background: #e8f3e8;
+        color: #2e7d5e;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: #fafcfd;
+        border-radius: 1rem;
+        border: 1px dashed #cde0e7;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        color: #cde0e7;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-state p {
+        color: #7c9aa6;
+        margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .welcome-section {
+            flex-direction: column;
+            text-align: center;
+        }
+        .slot-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .slot-date {
+            flex-wrap: wrap;
+        }
+    }
 </style>
 
 <div class="dashboard-container">
-
-    <!-- Header -->
-    <div class="dashboard-header">
-        <h2>Welcome, {{ request.user.username }}</h2>
-        <a href="{% url 'booking:counselor_logout' %}" class="logout-btn">
-            Logout
-        </a>
+    
+    <!-- Welcome Section with gradient -->
+    <div class="welcome-section">
+        <div class="welcome-text">
+            <h2>Welcome back, {{ request.user.first_name|default:request.user.username }}</h2>
+            <p><i class="fas fa-calendar-alt me-1"></i> Manage your counselling sessions and student appointments</p>
+        </div>
+        <div class="welcome-badge">
+            <i class="fas fa-user-check"></i>
+            <span>
+                {% for group in request.user.groups.all %}
+                    {{ group.name }}
+                {% endfor %}
+            </span>
+        </div>
     </div>
 
-    <!-- Action Cards -->
-    <div class="action-cards">
+    <!-- Quick Actions - 4 professional cards -->
+    <div class="quick-actions">
         <a href="{% url 'booking:add_slot' %}" class="action-card">
-            <h5>➕ Add New Slot</h5>
+            <div class="action-icon">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <div class="action-info">
+                <h5>Add New Slot</h5>
+                <small>Create availability for students</small>
+            </div>
         </a>
 
         <a href="{% url 'booking:counselor_bookings' %}" class="action-card">
-            <h5>📅 View Bookings</h5>
+            <div class="action-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="action-info">
+                <h5>View Bookings</h5>
+                <small>Manage upcoming appointments</small>
+            </div>
         </a>
 
         <a href="{% url 'booking:counselor_history' %}" class="action-card">
-            <h5>📖 Session History</h5>
+            <div class="action-icon">
+                <i class="fas fa-history"></i>
+            </div>
+            <div class="action-info">
+                <h5>Sessions</h5>
+                <small>Manage  counselling sessions</small>
+            </div>
         </a>
 
         <a href="{% url 'booking:student_search' %}" class="action-card">
-            <h5>🔎 Search Student</h5>
+            <div class="action-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="action-info">
+                <h5>Search Student</h5>
+                <small>Find student records & history</small>
+            </div>
         </a>
     </div>
 
-    <!-- Stats -->
-    <div class="stats">
-        <div class="stat-card">
-            <h6>Total Upcoming Slots</h6>
-            <h3>{{ slots|length }}</h3>
+    <!-- Stats Row -->
+    <div class="stats-row">
+        <div class="stat-card-modern">
+            <div class="stat-label">
+                <i class="fas fa-clock me-1"></i> UPCOMING SLOTS
+            </div>
+            <div class="stat-value">{{ slots|length }}</div>
+            <div class="stat-sub">Available for booking</div>
         </div>
 
-        <div class="stat-card">
-            <h6>Today’s Date</h6>
-            <h3>{{ today|date:"M d, Y" }}</h3>
+        <div class="stat-card-modern">
+            <div class="stat-label">
+                <i class="fas fa-calendar-day me-1"></i> TODAY'S DATE
+            </div>
+            <div class="stat-value" style="font-size: 1.4rem;">{{ today|date:"M d, Y" }}</div>
+            <div class="stat-sub">{{ today|date:"l" }}</div>
+        </div>
+
+        <div class="stat-card-modern">
+            <div class="stat-label">
+                <i class="fas fa-chart-line me-1"></i> ACTIVE SLOTS
+            </div>
+            <div class="stat-value">{{ slots|length }}</div>
+            <div class="stat-sub">Awaiting student bookings</div>
         </div>
     </div>
 
-    <!-- Upcoming Slots -->
-    <h5 class="slot-section-title">Upcoming Slots</h5>
+    <!-- Upcoming Slots Section -->
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-calendar-week"></i>
+            Upcoming Availability Slots
+        </div>
+        {% if slots %}
+            <small style="color: #7c9aa6;">
+                <i class="fas fa-clock me-1"></i> {{ slots|length }} slot{{ slots|pluralize }}
+            </small>
+        {% endif %}
+    </div>
 
     {% if slots %}
-        {% for s in slots %}
-            <div class="slot-card">
-                <strong>{{ s.date }}</strong><br>
-                {{ s.start_time }} – {{ s.end_time }}
-            </div>
-        {% endfor %}
+        <div class="slot-grid">
+            {% for s in slots %}
+                <div class="slot-item">
+                    <div class="slot-date">
+                        <div class="date-badge">
+                            <div class="date-day">{{ s.date|date:"d" }}</div>
+                            <div class="date-month">{{ s.date|date:"M" }}</div>
+                        </div>
+                        <div class="slot-time">
+                            <i class="far fa-clock"></i>
+                            <span>{{ s.start_time|time:"g:i A" }} – {{ s.end_time|time:"g:i A" }}</span>
+                        </div>
+                    </div>
+                    <div class="slot-status">
+                        <i class="fas fa-circle" style="font-size: 0.5rem; vertical-align: middle;"></i>
+                        Available
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     {% else %}
-        <p class="no-slots">No slots added yet.</p>
+        <div class="empty-state">
+            <i class="fas fa-calendar-times"></i>
+            <p>No upcoming slots available</p>
+            <small style="color: #a0bcc7;">Click "Add New Slot" to create availability for students</small>
+        </div>
     {% endif %}
 
 </div>
-
 {% endblock %}

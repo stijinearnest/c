@@ -1,112 +1,323 @@
 {% extends "booking/base.html" %}
-{% block title %}Add Slot{% endblock %}
+{% block title %}Add New Slot | CounselLink{% endblock %}
 
 {% block content %}
-
 <style>
-.form-wrapper {
-    max-width: 600px;
-    margin: auto;
-}
+    /* Modern form styling */
+    .add-slot-container {
+        max-width: 680px;
+        margin: 0 auto;
+    }
 
-.form-card {
-    background: white;
-    padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-}
+    /* Form header with breadcrumb style */
+    .form-header-modern {
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
 
-.form-title {
-    color: #2e5e6e;
-    font-weight: 600;
-}
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
 
-.custom-input input,
-.custom-input select {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid #c7d6df;
-    transition: 0.3s;
-}
+    .header-title .icon-circle {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFE5B4;
+        font-size: 1.25rem;
+    }
 
-.custom-input input:focus,
-.custom-input select:focus {
-    outline: none;
-    border-color: #2e5e6e;
-    box-shadow: 0 0 0 2px rgba(46,94,110,0.2);
-}
+    .header-title h3 {
+        margin: 0;
+        font-weight: 600;
+        color: #1a3b44;
+        font-size: 1.35rem;
+        letter-spacing: -0.3px;
+    }
 
-.back-btn {
-    border-radius: 8px;
-}
+    .header-title p {
+        margin: 0.2rem 0 0 0;
+        font-size: 0.75rem;
+        color: #7c9aa6;
+    }
 
-.note-text {
-    font-size: 13px;
-    color: #6c7a86;
-}
+    /* Modern card */
+    .form-card-modern {
+        background: white;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+    }
+
+    .form-body {
+        padding: 1.75rem 2rem;
+    }
+
+    /* Form groups with floating label effect */
+    .form-group-modern {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group-modern label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #446c7a;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.3px;
+    }
+
+    .form-group-modern label i {
+        margin-right: 0.4rem;
+        width: 1.1rem;
+        color: #8fb0bb;
+    }
+
+    .form-control-modern {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1.5px solid #e2edf2;
+        border-radius: 1rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        background: #fefefe;
+    }
+
+    .form-control-modern:focus {
+        outline: none;
+        border-color: #1F4E5E;
+        box-shadow: 0 0 0 3px rgba(31,78,94,0.1);
+        background: white;
+    }
+
+    /* Time row - two columns */
+    .time-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    /* Submit button */
+    .btn-submit-modern {
+        width: 100%;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border: none;
+        padding: 0.9rem;
+        border-radius: 1.25rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: white;
+        transition: all 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+    }
+
+    .btn-submit-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -8px rgba(31,78,94,0.4);
+        background: linear-gradient(135deg, #164854 0%, #0f3642 100%);
+    }
+
+    /* Info note */
+    .info-note-modern {
+        margin-top: 1.5rem;
+        padding: 0.75rem 1rem;
+        background: #f0f6fa;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.75rem;
+        color: #5c8b96;
+        border-left: 3px solid #1F4E5E;
+    }
+
+    .info-note-modern i {
+        font-size: 1rem;
+        color: #1F4E5E;
+    }
+
+    /* Error styling */
+    .error-text {
+        color: #dc7a6e;
+        font-size: 0.7rem;
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .alert-modern {
+        border-radius: 1rem;
+        border: none;
+        background: #fef2f0;
+        color: #c24a3a;
+        font-size: 0.85rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.25rem;
+        border-left: 4px solid #dc7a6e;
+    }
+
+    /* Responsive */
+    @media (max-width: 560px) {
+        .form-body {
+            padding: 1.25rem;
+        }
+        .time-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .header-title .icon-circle {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+        }
+        .header-title h3 {
+            font-size: 1.15rem;
+        }
+    }
 </style>
 
-<div class="form-wrapper">
-
-    <div class="form-card">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="form-title mb-0">Add New Slot</h4>
-            <a href="{% url 'booking:counselor_dashboard' %}" 
-               class="btn btn-sm btn-outline-primary back-btn">
-                Back
-            </a>
+<div class="add-slot-container">
+    
+    <!-- Form Header with back button integrated -->
+    <div class="form-header-modern">
+        <div class="header-title">
+            <div class="icon-circle">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <div>
+                <h3>Create Availability Slot</h3>
+                <p><i class="fas fa-calendar-alt me-1"></i> Add time slots for student counselling</p>
+            </div>
         </div>
-
-        {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-                {{ form.non_field_errors }}
-            </div>
-        {% endif %}
-
-        <form method="post" novalidate>
-            {% csrf_token %}
-
-            <!-- Date -->
-            <div class="mb-4 custom-input">
-                <label class="form-label fw-semibold">Date</label>
-                {{ form.date }}
-                {% if form.date.errors %}
-                    <div class="text-danger small mt-1">{{ form.date.errors }}</div>
-                {% endif %}
-            </div>
-
-            <!-- Time Row -->
-            <div class="row">
-                <div class="col-md-6 mb-4 custom-input">
-                    <label class="form-label fw-semibold">Start Time</label>
-                    {{ form.start_time }}
-                    {% if form.start_time.errors %}
-                        <div class="text-danger small mt-1">{{ form.start_time.errors }}</div>
-                    {% endif %}
-                </div>
-
-                <div class="col-md-6 mb-4 custom-input">
-                    <label class="form-label fw-semibold">End Time</label>
-                    {{ form.end_time }}
-                    {% if form.end_time.errors %}
-                        <div class="text-danger small mt-1">{{ form.end_time.errors }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 py-2">
-                Add Slot
-            </button>
-        </form>
-
-        <p class="note-text mt-4">
-            Times use 24-hour format. Choose aligned time blocks (e.g., 09:00, 10:00).
-        </p>
-
+        
     </div>
 
+    <!-- Main Form Card -->
+    <div class="form-card-modern">
+        <div class="form-body">
+            
+            <!-- Non-field errors -->
+            {% if form.non_field_errors %}
+                <div class="alert-modern">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <!-- Date Field -->
+                <div class="form-group-modern">
+                    <label for="{{ form.date.id_for_label }}">
+                        <i class="fas fa-calendar"></i> SELECT DATE
+                    </label>
+                    {{ form.date }}
+                    {% if form.date.errors %}
+                        <div class="error-text">
+                            <i class="fas fa-circle-exclamation"></i> {{ form.date.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Time Fields Row -->
+                <div class="time-row">
+                    <div class="form-group-modern">
+                        <label for="{{ form.start_time.id_for_label }}">
+                            <i class="fas fa-hourglass-start"></i> START TIME
+                        </label>
+                        {{ form.start_time }}
+                        {% if form.start_time.errors %}
+                            <div class="error-text">
+                                <i class="fas fa-circle-exclamation"></i> {{ form.start_time.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="{{ form.end_time.id_for_label }}">
+                            <i class="fas fa-hourglass-end"></i> END TIME
+                        </label>
+                        {{ form.end_time }}
+                        {% if form.end_time.errors %}
+                            <div class="error-text">
+                                <i class="fas fa-circle-exclamation"></i> {{ form.end_time.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-submit-modern">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Create Slot</span>
+                    <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                </button>
+            </form>
+
+            <!-- Helpful Information Note -->
+            <div class="info-note-modern">
+                <i class="fas fa-lightbulb"></i>
+                <div>
+                    <strong>Pro tip:</strong> Create slots in 30–60 minute durations. Times use 24-hour format (e.g., 09:00, 14:30). Students can book these available slots from their dashboard.
+                </div>
+            </div>
+            
+            <!-- Additional hint -->
+            <div class="info-note-modern" style="background: #fafcfd; border-left-color: #bdd3db;">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <strong>Time format example:</strong> Start: 10:00 &nbsp;|&nbsp; End: 11:00 — creates a one-hour counselling session.
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- Optional: Add some client-side validation hint for time fields -->
+<script>
+    (function() {
+        // Enhance date input placeholder and time inputs for better UX
+        const dateInput = document.querySelector('#{{ form.date.id_for_label }}');
+        if (dateInput) {
+            dateInput.setAttribute('placeholder', 'YYYY-MM-DD');
+            dateInput.classList.add('form-control-modern');
+        }
+        const startTime = document.querySelector('#{{ form.start_time.id_for_label }}');
+        const endTime = document.querySelector('#{{ form.end_time.id_for_label }}');
+        if (startTime) startTime.classList.add('form-control-modern');
+        if (endTime) endTime.classList.add('form-control-modern');
+        
+        // simple validation to ensure end time > start time on client side (non-blocking)
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (startTime && endTime && startTime.value && endTime.value) {
+                    if (startTime.value >= endTime.value) {
+                        e.preventDefault();
+                        alert('End time must be after start time. Please adjust the slot duration.');
+                    }
+                }
+            });
+        }
+    })();
+</script>
 {% endblock %}

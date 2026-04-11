@@ -1,133 +1,532 @@
 {% extends "booking/base.html" %}
-{% block title %}Session History{% endblock %}
+{% block title %}Sessions | CounselLink{% endblock %}
 
 {% block content %}
-
 <style>
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
+    /* Modern session history styling */
+    .history-container {
+        max-width: 100%;
+    }
 
-.page-title {
-    color: #2e5e6e;
-    font-weight: 600;
-}
+    /* Header section */
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+        margin-bottom: 1.75rem;
+    }
 
-.history-card {
-    background: white;
-    border-left: 5px solid #2e5e6e;
-    padding: 18px 20px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.05);
-    transition: 0.2s;
-}
+    .header-left h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1a3b44;
+        margin: 0 0 0.25rem 0;
+        letter-spacing: -0.3px;
+    }
 
-.history-card:hover {
-    transform: translateY(-2px);
-}
+    .header-left p {
+        margin: 0;
+        color: #7c9aa6;
+        font-size: 0.85rem;
+    }
 
-.history-date {
-    font-weight: 600;
-    color: #2e5e6e;
-}
+    .header-left p i {
+        margin-right: 0.3rem;
+    }
 
-.history-meta {
-    font-size: 14px;
-    color: #6c7a86;
-}
+    .back-btn {
+        border-radius: 2rem;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid #cde0e7;
+        color: #446c7a;
+        transition: all 0.2s;
+        background: transparent;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-.remark-box {
-    margin-top: 10px;
-    padding: 10px;
-    background: #f4f8fb;
-    border-radius: 8px;
-    font-size: 14px;
-}
+    .back-btn:hover {
+        background: #f0f6fa;
+        border-color: #1F4E5E;
+        color: #1F4E5E;
+        transform: translateX(-2px);
+        text-decoration: none;
+    }
 
-.status-badge {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-}
+    /* Filter Bar */
+    .filter-bar {
+        background: white;
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        border: 1px solid #edf4f8;
+    }
 
-.badge-attended {
-    background: #cce5d8;
-    color: #1d6f42;
-}
+    .filter-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
 
-.badge-missed {
-    background: #fde2e2;
-    color: #a94442;
-}
+    .filter-date-input {
+        border: 1.5px solid #e2edf2;
+        border-radius: 2rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.2s;
+    }
 
-.empty-state {
-    text-align: center;
-    padding: 40px;
-    color: #6c7a86;
-}
+    .filter-date-input:focus {
+        outline: none;
+        border-color: #1F4E5E;
+        box-shadow: 0 0 0 3px rgba(31,78,94,0.1);
+    }
+
+    .filter-btn {
+        border-radius: 2rem;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: #1F4E5E;
+        color: white;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+        background: #0f3e4b;
+        transform: translateY(-1px);
+    }
+
+    .today-btn {
+        border-radius: 2rem;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: transparent;
+        border: 1px solid #cde0e7;
+        color: #446c7a;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .today-btn:hover {
+        background: #f0f6fa;
+        border-color: #1F4E5E;
+        color: #1F4E5E;
+        text-decoration: none;
+    }
+
+    .stats-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: #7c9aa6;
+    }
+
+    .stats-info strong {
+        color: #1F4E5E;
+        font-size: 1rem;
+    }
+
+    /* Stats row */
+    .stats-row-mini {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.75rem;
+    }
+
+    .stat-mini-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border: 1px solid #edf4f8;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .stat-mini-icon {
+        width: 36px;
+        height: 36px;
+        background: #f0f6fa;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1F4E5E;
+        font-size: 1rem;
+    }
+
+    .stat-mini-info .stat-number {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a3b44;
+        line-height: 1.2;
+    }
+
+    .stat-mini-info .stat-label {
+        font-size: 0.7rem;
+        color: #7c9aa6;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    /* History Cards */
+    .history-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .history-card-modern {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #edf4f8;
+        transition: all 0.2s;
+        overflow: hidden;
+    }
+
+    .history-card-modern:hover {
+        box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.1);
+        border-color: #dce9f0;
+    }
+
+    .card-content {
+        padding: 1.25rem 1.5rem;
+    }
+
+    /* Card header */
+    .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .session-info {
+        flex: 2;
+    }
+
+    .session-date-time {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.5rem;
+    }
+
+    .date-badge-mini {
+        background: #f0f6fa;
+        border-radius: 0.75rem;
+        padding: 0.3rem 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #1F4E5E;
+    }
+
+    .time-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: #5c8b96;
+    }
+
+    .student-name {
+        font-weight: 600;
+        color: #1a3b44;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.25rem;
+    }
+
+    .student-name i {
+        color: #8fb0bb;
+    }
+
+    /* Status badge */
+    .status-badge-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 2rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    .status-attended {
+        background: #e3f5ec;
+        color: #2e7d5e;
+    }
+
+    .status-missed {
+        background: #fee9e6;
+        color: #c47a44;
+    }
+
+    /* Remark section */
+    .remark-section {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        background: #f8fbfc;
+        border-radius: 0.75rem;
+        border-left: 3px solid #1F4E5E;
+    }
+
+    .remark-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #7c9aa6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.3rem;
+    }
+
+    .remark-text {
+        font-size: 0.85rem;
+        color: #446c7a;
+        line-height: 1.4;
+    }
+
+    .remark-text i {
+        color: #8fb0bb;
+        margin-right: 0.3rem;
+    }
+
+    /* Action button */
+    .action-btn {
+        margin-top: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background: transparent;
+        border: 1px solid #cde0e7;
+        color: #446c7a;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        background: #f0f6fa;
+        border-color: #1F4E5E;
+        color: #1F4E5E;
+        text-decoration: none;
+    }
+
+    /* Empty state */
+    .empty-state-modern {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: #fafcfd;
+        border-radius: 1rem;
+        border: 1px dashed #cde0e7;
+    }
+
+    .empty-state-modern i {
+        font-size: 3rem;
+        color: #cde0e7;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-modern h6 {
+        font-size: 1rem;
+        color: #446c7a;
+        margin-bottom: 0.25rem;
+    }
+
+    .empty-state-modern p {
+        font-size: 0.8rem;
+        color: #8fb0bb;
+        margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .card-content {
+            padding: 1rem;
+        }
+        .filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .filter-controls {
+            justify-content: space-between;
+        }
+        .history-header {
+            flex-direction: column;
+        }
+    }
 </style>
 
-<div class="page-header">
-    <h4 class="page-title">Session History</h4>
-    <a href="{% url 'booking:counselor_dashboard' %}" 
-       class="btn btn-outline-primary btn-sm">
-        Back
-    </a>
-</div>
-
-{% if bookings %}
-
-    <div class="mb-3">
-        <strong>Total Sessions:</strong> {{ bookings|length }}
+<div class="history-container">
+    
+    <!-- Header -->
+    <div class="history-header">
+        <div class="header-left">
+            <h2>
+                <i class="fas fa-history me-2" style="color: #1F4E5E;"></i>
+                Sessions
+            </h2>
+            <p><i class="fas fa-clipboard-list"></i> View and manage completed counselling sessions</p>
+        </div>
+        
     </div>
 
-    {% for b in bookings %}
-        <div class="history-card">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <div class="history-date">
-                        {{ b.slot.date }} | {{ b.session_start }} – {{ b.session_end }}
-                    </div>
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <form method="get" class="filter-controls" style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 0;">
+            <input type="date" name="date" value="{{ selected_date }}" class="filter-date-input">
+            <button type="submit" class="filter-btn">
+                <i class="fas fa-search me-1"></i> Filter
+            </button>
+            <a href="{% url 'booking:counselor_history' %}" class="today-btn">
+                <i class="fas fa-calendar-day me-1"></i> Today
+            </a>
+        </form>
+        {% if bookings %}
+        <div class="stats-info">
+            <i class="fas fa-chart-simple"></i>
+            <strong>{{ bookings|length }}</strong> session{{ bookings|length|pluralize }}
+        </div>
+        {% endif %}
+    </div>
 
-                    <div class="history-meta mt-1">
-                        Student: {{ b.student.name }}
-                    </div>
-                </div>
-
-                <div>
-                    {% if b.attended %}
-                        <span class="status-badge badge-attended">Attended</span>
-                    {% else %}
-                        <span class="status-badge badge-missed">Not Marked</span>
-                    {% endif %}
-                </div>
+    <!-- Stats Summary -->
+    {% if bookings %}
+    <div class="stats-row-mini">
+        <div class="stat-mini-card">
+            <div class="stat-mini-icon">
+                <i class="fas fa-check-circle"></i>
             </div>
-
-            <div class="remark-box">
-                <strong>Remark:</strong>
-                {{ b.counselor_remark|default:"No remark added yet." }}
-            </div>
-
-            <div class="mt-2">
-                <a href="{% url 'booking:add_remark' b.id %}" 
-                   class="btn btn-sm btn-outline-primary">
-                    Add / Edit Remark
-                </a>
+            <div class="stat-mini-info">
+                <div class="stat-number">{{ attended_count }}</div>
+                <div class="stat-label">Attended</div>
             </div>
         </div>
-    {% endfor %}
-
-{% else %}
-
-    <div class="empty-state">
-        <h6>No session history yet</h6>
-        <p>Completed sessions will appear here.</p>
+        <div class="stat-mini-card">
+            <div class="stat-mini-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-mini-info">
+                <div class="stat-number">{{ pending_count }}</div>
+                <div class="stat-label">Not Marked</div>
+            </div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-mini-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-mini-info">
+                <div class="stat-number">{{ bookings_with_remarks }}</div>
+                <div class="stat-label">With Remarks</div>
+            </div>
+        </div>
     </div>
+    {% endif %}
 
-{% endif %}
+    <!-- History List -->
+    {% if bookings %}
+        <div class="history-grid">
+            {% for b in bookings %}
+                <div class="history-card-modern">
+                    <div class="card-content">
+                        <!-- Card Header -->
+                        <div class="card-header-row">
+                            <div class="session-info">
+                                <div class="session-date-time">
+                                    <span class="date-badge-mini">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        {{ b.slot.date|date:"M d, Y" }}
+                                    </span>
+                                    <span class="time-badge">
+                                        <i class="far fa-clock"></i>
+                                        {{ b.session_start|time:"g:i A" }} – {{ b.session_end|time:"g:i A" }}
+                                    </span>
+                                </div>
+                                <div class="student-name">
+                                    <i class="fas fa-user-graduate"></i>
+                                    {{ b.student.name }}
+                                </div>
+                            </div>
+                            <div>
+                                {% if b.attended %}
+                                    <span class="status-badge-modern status-attended">
+                                        <i class="fas fa-check-circle"></i> Attended
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge-modern status-missed">
+                                        <i class="fas fa-clock"></i> Not Marked
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
 
+                        <!-- Remark Section -->
+                        <div class="remark-section">
+                            <div class="remark-label">
+                                <i class="fas fa-pen"></i> Counsellor's Remark
+                            </div>
+                            <div class="remark-text">
+                                {% if b.counselor_remark %}
+                                    <i class="fas fa-quote-left"></i> {{ b.counselor_remark }}
+                                {% else %}
+                                    <i class="fas fa-edit"></i> No remark added yet.
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Action Button -->
+                        <a href="{% url 'booking:add_remark' b.id %}" class="action-btn">
+                            <i class="fas {% if b.counselor_remark %}fa-edit{% else %}fa-plus-circle{% endif %}"></i>
+                            {% if b.counselor_remark %}Edit Remark{% else %}Add Remark{% endif %}
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state-modern">
+            <i class="fas fa-history"></i>
+            <h6>No session history found</h6>
+            <p>{% if selected_date %}No sessions on {{ selected_date }}{% else %}Completed sessions will appear here{% endif %}</p>
+            
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+    console.log("Session history page loaded");
+</script>
 {% endblock %}

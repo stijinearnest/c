@@ -1,117 +1,513 @@
 {% extends "booking/base.html" %}
-{% block title %}Search Student{% endblock %}
+{% block title %}Search Student | CounselLink{% endblock %}
 
 {% block content %}
-
 <style>
-.search-container {
-    padding: 30px 10px;
-}
+    /* Modern search page styling */
+    .search-container {
+        max-width: 100%;
+    }
 
-/* Header */
-.search-title {
-    color: #2e5e6e;
-    font-weight: 600;
-    margin-bottom: 25px;
-}
+    /* Header section */
+    .search-header {
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
 
-/* Search Card */
-.search-card {
-    background: white;
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-}
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
 
-/* Search Button */
-.search-btn {
-    background: #2e5e6e;
-    border: none;
-}
+    .header-title .icon-circle {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFE5B4;
+        font-size: 1.25rem;
+    }
 
-.search-btn:hover {
-    background: #244d58;
-}
+    .header-title h3 {
+        margin: 0;
+        font-weight: 600;
+        color: #1a3b44;
+        font-size: 1.35rem;
+        letter-spacing: -0.3px;
+    }
 
-/* Result Cards */
-.result-card {
-    background: #ffffff;
-    border-left: 5px solid #2e5e6e;
-    padding: 18px 20px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-    transition: 0.2s;
-}
+    .header-title p {
+        margin: 0.2rem 0 0 0;
+        font-size: 0.75rem;
+        color: #7c9aa6;
+    }
 
-.result-card:hover {
-    transform: translateY(-2px);
-}
+    .back-btn {
+        border-radius: 2rem;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid #cde0e7;
+        color: #446c7a;
+        transition: all 0.2s;
+        background: transparent;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-.result-name {
-    font-weight: 600;
-    color: #2e5e6e;
-}
+    .back-btn:hover {
+        background: #f0f6fa;
+        border-color: #1F4E5E;
+        color: #1F4E5E;
+        transform: translateX(-2px);
+        text-decoration: none;
+    }
 
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 30px;
-    color: #6c7a86;
-}
+    /* Search Card */
+    .search-card-modern {
+        background: white;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+        margin-bottom: 1.75rem;
+    }
+
+    .search-body {
+        padding: 1.75rem 2rem;
+    }
+
+    /* Enhanced search input group */
+    .search-input-group {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .search-input-wrapper {
+        flex: 1;
+        position: relative;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8fb0bb;
+        font-size: 0.9rem;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.85rem 1rem 0.85rem 2.6rem;
+        border: 1.5px solid #e2edf2;
+        border-radius: 1rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        background: #fefefe;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #1F4E5E;
+        box-shadow: 0 0 0 3px rgba(31,78,94,0.1);
+        background: white;
+    }
+
+    .search-input::placeholder {
+        color: #c0d4dd;
+    }
+
+    .search-btn-modern {
+        padding: 0.85rem 1.75rem;
+        border-radius: 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border: none;
+        color: white;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .search-btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px -8px rgba(31,78,94,0.4);
+        background: linear-gradient(135deg, #164854 0%, #0f3642 100%);
+    }
+
+    /* Search tips */
+    .search-tips {
+        margin-top: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        font-size: 0.7rem;
+        color: #8fb0bb;
+    }
+
+    .search-tips i {
+        margin-right: 0.25rem;
+    }
+
+    /* Results Header */
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .results-count {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #f0f6fa;
+        padding: 0.4rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #1F4E5E;
+    }
+
+    .results-count i {
+        font-size: 0.85rem;
+    }
+
+    /* Results Grid */
+    .results-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .student-card-modern {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #edf4f8;
+        transition: all 0.2s;
+        overflow: hidden;
+    }
+
+    .student-card-modern:hover {
+        box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.1);
+        border-color: #dce9f0;
+        transform: translateY(-2px);
+    }
+
+    .card-content {
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    /* Student Info */
+    .student-info {
+        flex: 2;
+    }
+
+    .student-name {
+        font-weight: 700;
+        color: #1a3b44;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.3rem;
+    }
+
+    .student-name i {
+        color: #1F4E5E;
+        font-size: 1rem;
+    }
+
+    .student-email {
+        font-size: 0.8rem;
+        color: #7c9aa6;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .student-email i {
+        font-size: 0.7rem;
+        color: #8fb0bb;
+    }
+
+    /* Student Stats */
+    .student-stats {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-pill {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+        background: #f0f6fa;
+        border-radius: 1rem;
+        color: #5c8b96;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* View Button */
+    .view-btn {
+        padding: 0.6rem 1.25rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: transparent;
+        border: 1px solid #cde0e7;
+        color: #446c7a;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .view-btn:hover {
+        background: #1F4E5E;
+        border-color: #1F4E5E;
+        color: white;
+        text-decoration: none;
+        transform: translateX(2px);
+    }
+
+    /* Empty State */
+    .empty-state-modern {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: #fafcfd;
+        border-radius: 1rem;
+        border: 1px dashed #cde0e7;
+    }
+
+    .empty-state-modern i {
+        font-size: 3rem;
+        color: #cde0e7;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-modern h6 {
+        font-size: 1rem;
+        color: #446c7a;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state-modern p {
+        font-size: 0.8rem;
+        color: #8fb0bb;
+        margin: 0;
+    }
+
+    .query-highlight {
+        background: #fef7e0;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.3rem;
+        font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .search-body {
+            padding: 1.25rem;
+        }
+        .search-input-group {
+            flex-direction: column;
+        }
+        .search-btn-modern {
+            width: 100%;
+            justify-content: center;
+        }
+        .card-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .view-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        .search-header {
+            flex-direction: column;
+        }
+        .header-title {
+            width: 100%;
+        }
+    }
 </style>
 
 <div class="search-container">
-
-    <h3 class="search-title">🔎 Search Student</h3>
-
-    <!-- Search Form -->
-    <div class="search-card">
-        <form method="post">
-            {% csrf_token %}
-            <div class="input-group">
-                <input type="text" name="name" class="form-control"
-                       placeholder="Enter student name..." required>
-                <button class="btn search-btn text-white px-4">
-                    Search
-                </button>
+    
+    <!-- Header -->
+    <div class="search-header">
+        <div class="header-title">
+            <div class="icon-circle">
+                <i class="fas fa-search"></i>
             </div>
-        </form>
+            <div>
+                <h3>Search Student</h3>
+                <p><i class="fas fa-users"></i> Find students and view their counselling records</p>
+            </div>
+        </div>
+        
     </div>
 
-    <!-- Results -->
-    {% if students %}
-
-        <h5 class="mb-3 text-muted">
-            {{ students|length }} result{{ students|length|pluralize }} found
-        </h5>
-
-        {% for student in students %}
-            <div class="result-card d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="result-name">{{ student.name }}</div>
-                    <small class="text-muted">
-                        {{ student.email }}
-                    </small>
+    <!-- Search Form Card -->
+    <div class="search-card-modern">
+        <div class="search-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="search-input-group">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-user-graduate search-icon"></i>
+                        <input type="text" 
+                               name="name" 
+                               class="search-input"
+                               placeholder="Enter student name or email..."
+                               value="{{ query|default:'' }}"
+                               required>
+                    </div>
+                    <button type="submit" class="search-btn-modern">
+                        <i class="fas fa-search"></i>
+                        Search Student
+                    </button>
                 </div>
+                <div class="search-tips">
+                    <span><i class="fas fa-lightbulb"></i> Tip: You can search by full name or partial name</span>
+                    <span><i class="fas fa-envelope"></i> Email search also supported</span>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                <a href="{% url 'booking:student_detail' student.id %}"
-                   class="btn btn-sm btn-outline-primary">
-                    View Record
-                </a>
+    <!-- Results Section -->
+    {% if students %}
+        <!-- Results Header -->
+        <div class="results-header">
+            <div class="results-count">
+                <i class="fas fa-chart-simple"></i>
+                {{ students|length }} student{{ students|length|pluralize }} found
             </div>
-        {% endfor %}
-
-    {% elif query %}
-
-        <div class="search-card empty-state">
-            <h6>No students found</h6>
-            <p>No results matched "<strong>{{ query }}</strong>"</p>
+            {% if query %}
+                <small style="color: #8fb0bb;">
+                    <i class="fas fa-search"></i> Showing results for: 
+                    <strong style="color: #1F4E5E;">"{{ query }}"</strong>
+                </small>
+            {% endif %}
         </div>
 
+        <!-- Results List -->
+        <div class="results-grid">
+            {% for student in students %}
+                <div class="student-card-modern">
+                    <div class="card-content">
+                        <div class="student-info">
+                            <div class="student-name">
+                                <i class="fas fa-user-circle"></i>
+                                {{ student.name }}
+                            </div>
+                            <div class="student-email">
+                                <i class="fas fa-envelope"></i>
+                                {{ student.email }}
+                            </div>
+                            <div class="student-stats">
+                                <span class="stat-pill">
+                                    <i class="fas fa-calendar-check"></i>
+                                    {% with booking_count=student.bookings.count %}
+                                        {{ booking_count }} session{{ booking_count|pluralize }}
+                                    {% endwith %}
+                                </span>
+                                <span class="stat-pill">
+                                    <i class="fas fa-clock"></i>
+                                    Active
+                                </span>
+                            </div>
+                        </div>
+                        <a href="{% url 'booking:student_detail' student.id %}" class="view-btn">
+                            View Record
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% elif query %}
+        <!-- Empty State with query -->
+        <div class="empty-state-modern">
+            <i class="fas fa-user-slash"></i>
+            <h6>No students found</h6>
+            <p>No results matched <span class="query-highlight">"{{ query }}"</span></p>
+            <small style="color: #8fb0bb; display: block; margin-top: 0.5rem;">
+                <i class="fas fa-info-circle"></i> Try searching with a different name or email
+            </small>
+        </div>
+
+    {% else %}
+        <!-- Initial empty state (no search performed) -->
+        <div class="empty-state-modern">
+            <i class="fas fa-search"></i>
+            <h6>Search for students</h6>
+            <p>Enter a student name or email above to view their counselling records</p>
+        </div>
     {% endif %}
 
 </div>
 
+<!-- Optional: Add keyboard shortcut for search -->
+<script>
+    (function() {
+        // Focus search input on '/' key press
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+        }
+        
+        // Show loading state on form submit
+        const form = document.querySelector('form');
+        const searchBtn = document.querySelector('.search-btn-modern');
+        
+        if (form && searchBtn) {
+            form.addEventListener('submit', function() {
+                const originalText = searchBtn.innerHTML;
+                searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+                searchBtn.disabled = true;
+                setTimeout(() => {
+                    // Re-enable after timeout (in case of slow network)
+                    // The form will submit anyway
+                }, 100);
+            });
+        }
+    })();
+</script>
 {% endblock %}

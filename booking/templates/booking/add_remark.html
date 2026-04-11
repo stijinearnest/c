@@ -1,108 +1,485 @@
 {% extends "booking/base.html" %}
-{% block title %}Add Remark{% endblock %}
+{% block title %}Add Remark | CounselLink{% endblock %}
 
 {% block content %}
-
 <style>
-.remark-wrapper {
-    max-width: 700px;
-    margin: auto;
-}
+    /* Modern remark form styling */
+    .remark-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
 
-.remark-card {
-    background: white;
-    padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-}
+    /* Header section */
+    .remark-header {
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
 
-.page-title {
-    color: #2e5e6e;
-    font-weight: 600;
-}
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
 
-.session-info {
-    background: #f4f8fb;
-    padding: 12px 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    font-size: 14px;
-}
+    .header-title .icon-circle {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFE5B4;
+        font-size: 1.25rem;
+    }
 
-.custom-textarea {
-    width: 100%;
-    border-radius: 12px;
-    border: 1px solid #c7d6df;
-    padding: 12px;
-    resize: vertical;
-    transition: 0.3s;
-}
+    .header-title h3 {
+        margin: 0;
+        font-weight: 600;
+        color: #1a3b44;
+        font-size: 1.35rem;
+        letter-spacing: -0.3px;
+    }
 
-.custom-textarea:focus {
-    outline: none;
-    border-color: #2e5e6e;
-    box-shadow: 0 0 0 2px rgba(46,94,110,0.2);
-}
+    .header-title p {
+        margin: 0.2rem 0 0 0;
+        font-size: 0.75rem;
+        color: #7c9aa6;
+    }
 
-.attended-toggle {
-    margin-top: 15px;
-}
+    .back-btn {
+        border-radius: 2rem;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid #cde0e7;
+        color: #446c7a;
+        transition: all 0.2s;
+        background: transparent;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-.form-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-}
+    .back-btn:hover {
+        background: #f0f6fa;
+        border-color: #1F4E5E;
+        color: #1F4E5E;
+        transform: translateX(-2px);
+        text-decoration: none;
+    }
+
+    /* Main form card */
+    .remark-card-modern {
+        background: white;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+    }
+
+    .form-body {
+        padding: 1.75rem 2rem;
+    }
+
+    /* Session info card */
+    .session-info-card {
+        background: linear-gradient(135deg, #f8fbfc 0%, #f0f6fa 100%);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        margin-bottom: 1.75rem;
+        border: 1px solid #e2edf2;
+    }
+
+    .info-title {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        color: #7c9aa6;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .info-item i {
+        width: 28px;
+        height: 28px;
+        background: white;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1F4E5E;
+        font-size: 0.8rem;
+    }
+
+    .info-label {
+        font-weight: 500;
+        color: #446c7a;
+        margin-right: 0.25rem;
+    }
+
+    .info-value {
+        color: #1a3b44;
+        font-weight: 500;
+    }
+
+    /* Form groups */
+    .form-group-modern {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group-modern label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #446c7a;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.3px;
+    }
+
+    .form-group-modern label i {
+        margin-right: 0.4rem;
+        color: #8fb0bb;
+    }
+
+    .remark-textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 1.5px solid #e2edf2;
+        border-radius: 1rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        background: #fefefe;
+        resize: vertical;
+    }
+
+    .remark-textarea:focus {
+        outline: none;
+        border-color: #1F4E5E;
+        box-shadow: 0 0 0 3px rgba(31,78,94,0.1);
+        background: white;
+    }
+
+    /* Custom checkbox toggle */
+    .attended-toggle-modern {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: #f8fbfc;
+        border-radius: 1rem;
+        border: 1px solid #e2edf2;
+        margin-bottom: 1.75rem;
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 24px;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cde0e7;
+        transition: 0.3s;
+        border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+        background-color: #1F4E5E;
+    }
+
+    input:checked + .toggle-slider:before {
+        transform: translateX(24px);
+    }
+
+    .toggle-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #1a3b44;
+    }
+
+    .toggle-hint {
+        font-size: 0.7rem;
+        color: #8fb0bb;
+        margin-left: auto;
+    }
+
+    /* Action buttons */
+    .form-actions-modern {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .btn-cancel {
+        flex: 1;
+        padding: 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        background: transparent;
+        border: 1.5px solid #e2edf2;
+        color: #446c7a;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #f0f6fa;
+        border-color: #cde0e7;
+        color: #1F4E5E;
+        text-decoration: none;
+    }
+
+    .btn-save {
+        flex: 2;
+        padding: 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border: none;
+        color: white;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px -8px rgba(31,78,94,0.4);
+        background: linear-gradient(135deg, #164854 0%, #0f3642 100%);
+    }
+
+    /* Character counter */
+    .char-counter {
+        text-align: right;
+        font-size: 0.7rem;
+        color: #8fb0bb;
+        margin-top: 0.3rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .form-body {
+            padding: 1.25rem;
+        }
+        .info-details {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+        .form-actions-modern {
+            flex-direction: column;
+        }
+        .remark-header {
+            flex-direction: column;
+        }
+        .header-title {
+            width: 100%;
+        }
+    }
 </style>
 
-<div class="remark-wrapper">
-
-    <div class="remark-card">
-
-        <h4 class="page-title mb-3">Session Remark</h4>
-
-        <div class="session-info">
-            <strong>Student:</strong> {{ booking.student_name }} <br>
-            <strong>Date:</strong> {{ booking.slot.date }} <br>
-            <strong>Time:</strong> {{ booking.session_start }} – {{ booking.session_end }}
+<div class="remark-container">
+    
+    <!-- Header -->
+    <div class="remark-header">
+        <div class="header-title">
+            <div class="icon-circle">
+                <i class="fas fa-pen-fancy"></i>
+            </div>
+            <div>
+                <h3>Session Remark</h3>
+                <p><i class="fas fa-clipboard"></i> Add counselling notes and mark attendance</p>
+            </div>
         </div>
-
-        <form method="post">
-            {% csrf_token %}
-
-            <label class="form-label fw-semibold">Remark</label>
-            <textarea name="remark"
-                      rows="6"
-                      class="custom-textarea"
-            >{{ booking.counselor_remark }}</textarea>
-
-            <div class="form-check attended-toggle">
-                <input class="form-check-input"
-                       type="checkbox"
-                       name="attended"
-                       id="attendedCheck"
-                       {% if booking.attended %}checked{% endif %}>
-                <label class="form-check-label" for="attendedCheck">
-                    Mark as Attended
-                </label>
-            </div>
-
-            <div class="form-actions">
-                <a href="{% url 'booking:counselor_history' %}"
-                   class="btn btn-outline-primary">
-                    Back
-                </a>
-
-                <button type="submit"
-                        class="btn btn-primary px-4">
-                    Save Remark
-                </button>
-            </div>
-
-        </form>
-
+        
     </div>
 
+    <!-- Main Form Card -->
+    <div class="remark-card-modern">
+        <div class="form-body">
+            
+            <!-- Session Information Card -->
+            <div class="session-info-card">
+                <div class="info-title">
+                    <i class="fas fa-info-circle"></i>
+                    Session Details
+                </div>
+                <div class="info-details">
+                    <div class="info-item">
+                        <i class="fas fa-user-graduate"></i>
+                        <div>
+                            <span class="info-label">Student:</span>
+                            <span class="info-value">{{ booking.student.name }}</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div>
+                            <span class="info-label">Date:</span>
+                            <span class="info-value">{{ booking.slot.date|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="info-label">Time:</span>
+                            <span class="info-value">{{ booking.session_start|time:"g:i A" }} – {{ booking.session_end|time:"g:i A" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Remark Textarea -->
+                <div class="form-group-modern">
+                    <label for="remark-textarea">
+                        <i class="fas fa-comment-dots"></i> Counselling Notes / Remark
+                    </label>
+                    <textarea name="remark"
+                              id="remark-textarea"
+                              rows="6"
+                              class="remark-textarea"
+                              placeholder="Document key discussion points, observations, recommendations, and follow-up actions...">{{ booking.counselor_remark }}</textarea>
+                    <div class="char-counter">
+                        <i class="fas fa-edit"></i> <span id="charCount">0</span> characters
+                    </div>
+                </div>
+
+                <!-- Attended Toggle (Modern Switch) -->
+                <div class="attended-toggle-modern">
+                    <div class="toggle-switch">
+                        <input type="checkbox"
+                               name="attended"
+                               id="attendedCheck"
+                               class="attended-input"
+                               {% if booking.attended %}checked{% endif %}>
+                        <label for="attendedCheck" class="toggle-slider"></label>
+                    </div>
+                    <div class="toggle-label">
+                        <i class="fas fa-user-check"></i> Mark as Attended
+                    </div>
+                    <div class="toggle-hint">
+                        <i class="fas fa-info-circle"></i> Confirm student's presence
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions-modern">
+                    <a href="{% url 'booking:counselor_history' %}" class="btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i>
+                        Save Remark
+                        <i class="fas fa-arrow-right" style="font-size: 0.7rem;"></i>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 </div>
 
+<!-- Character Counter Script -->
+<script>
+    (function() {
+        const textarea = document.getElementById('remark-textarea');
+        const charCountSpan = document.getElementById('charCount');
+        
+        function updateCharCount() {
+            if (textarea && charCountSpan) {
+                const length = textarea.value.length;
+                charCountSpan.textContent = length;
+                if (length > 500) {
+                    charCountSpan.style.color = '#c47a44';
+                } else {
+                    charCountSpan.style.color = '#8fb0bb';
+                }
+            }
+        }
+        
+        if (textarea) {
+            // Initial count
+            updateCharCount();
+            // Update on input
+            textarea.addEventListener('input', updateCharCount);
+        }
+        
+        // Optional: Add confirmation before leaving if unsaved changes
+        let formChanged = false;
+        const form = document.querySelector('form');
+        const inputs = document.querySelectorAll('textarea, input');
+        
+        inputs.forEach(input => {
+            input.addEventListener('change', () => { formChanged = true; });
+            input.addEventListener('input', () => { formChanged = true; });
+        });
+        
+        window.addEventListener('beforeunload', (e) => {
+            if (formChanged) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+        
+        form.addEventListener('submit', () => {
+            formChanged = false;
+        });
+    })();
+</script>
 {% endblock %}

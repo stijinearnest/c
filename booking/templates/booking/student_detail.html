@@ -1,132 +1,591 @@
 {% extends "booking/base.html" %}
-{% block title %}Student Record{% endblock %}
+{% block title %}Student Record | CounselLink{% endblock %}
 
 {% block content %}
-
 <style>
-.record-container {
-    padding: 30px 10px;
-}
+    /* Modern student record styling */
+    .record-container {
+        max-width: 100%;
+    }
 
-/* Profile Card */
-.profile-card {
-    background: white;
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-}
+    /* Header section */
+    .record-header {
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
 
-.profile-name {
-    color: #2e5e6e;
-    font-weight: 600;
-}
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
 
-.profile-meta {
-    color: #6c7a86;
-}
+    .header-title .icon-circle {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFE5B4;
+        font-size: 1.25rem;
+    }
 
-/* Section Title */
-.section-title {
-    color: #2e5e6e;
-    margin-bottom: 20px;
-    font-weight: 600;
-}
+    .header-title h3 {
+        margin: 0;
+        font-weight: 600;
+        color: #1a3b44;
+        font-size: 1.35rem;
+        letter-spacing: -0.3px;
+    }
 
-/* Session Card */
-.session-card {
-    background: #ffffff;
-    border-left: 6px solid #2e5e6e;
-    padding: 18px 20px;
-    border-radius: 14px;
-    margin-bottom: 18px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-    transition: 0.2s;
-}
+    .header-title p {
+        margin: 0.2rem 0 0 0;
+        font-size: 0.75rem;
+        color: #7c9aa6;
+    }
 
-.session-card:hover {
-    transform: translateY(-2px);
-}
+    .back-btn {
+        border-radius: 2rem;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid #cde0e7;
+        color: #446c7a;
+        transition: all 0.2s;
+        background: transparent;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-/* Status Badge */
-.status-badge {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-}
+    .back-btn:hover {
+        background: #f0f6fa;
+        border-color: #1F4E5E;
+        color: #1F4E5E;
+        transform: translateX(-2px);
+        text-decoration: none;
+    }
 
-.badge-attended {
-    background: #cce5d8;
-    color: #1d6f42;
-}
+    /* Student Profile Card */
+    .profile-card-modern {
+        background: white;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+        margin-bottom: 1.75rem;
+    }
 
-.badge-missed {
-    background: #fde2e2;
-    color: #a94442;
-}
+    .profile-header {
+        background: linear-gradient(135deg, #1F4E5E 0%, #143d4a 100%);
+        padding: 1.5rem;
+        color: white;
+    }
 
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 30px;
-    color: #6c7a86;
-}
+    .profile-name-large {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.25rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .profile-name-large i {
+        font-size: 1.8rem;
+        color: #FFE5B4;
+    }
+
+    .profile-id {
+        font-size: 0.8rem;
+        opacity: 0.85;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.25rem;
+    }
+
+    .profile-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+
+    .info-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .info-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        color: #7c9aa6;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #1a3b44;
+        word-break: break-word;
+    }
+
+    .info-value i {
+        color: #8fb0bb;
+        margin-right: 0.3rem;
+    }
+
+    /* Stats Row */
+    .stats-row-mini {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.75rem;
+    }
+
+    .stat-mini-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border: 1px solid #edf4f8;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .stat-mini-icon {
+        width: 40px;
+        height: 40px;
+        background: #f0f6fa;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1F4E5E;
+        font-size: 1.1rem;
+    }
+
+    .stat-mini-info .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a3b44;
+        line-height: 1.2;
+    }
+
+    .stat-mini-info .stat-label {
+        font-size: 0.7rem;
+        color: #7c9aa6;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    /* Section Header */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a3b44;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: #1F4E5E;
+        font-size: 1.2rem;
+    }
+
+    /* Session Cards */
+    .sessions-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .session-card-modern {
+        background: white;
+        border-radius: 1rem;
+        border: 1px solid #edf4f8;
+        transition: all 0.2s;
+        overflow: hidden;
+    }
+
+    .session-card-modern:hover {
+        box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.1);
+        border-color: #dce9f0;
+        transform: translateY(-2px);
+    }
+
+    .session-card-modern.emergency-session {
+        border-left: 4px solid #dc7a6e;
+        background: linear-gradient(135deg, #ffffff 0%, #fffaf8 100%);
+    }
+
+    .session-content {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .session-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .session-date-time {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .date-badge {
+        background: #f0f6fa;
+        border-radius: 0.75rem;
+        padding: 0.3rem 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #1F4E5E;
+    }
+
+    .time-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: #5c8b96;
+    }
+
+    .status-badge-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 2rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    .status-attended {
+        background: #e3f5ec;
+        color: #2e7d5e;
+    }
+
+    .status-missed {
+        background: #fee9e6;
+        color: #c47a44;
+    }
+
+    .session-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #eef3f7;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: #5c8b96;
+    }
+
+    .detail-item i {
+        width: 24px;
+        color: #8fb0bb;
+    }
+
+    .detail-item strong {
+        color: #446c7a;
+        font-weight: 600;
+    }
+
+    .remark-section {
+        margin-top: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: #f8fbfc;
+        border-radius: 0.75rem;
+        border-left: 3px solid #1F4E5E;
+    }
+
+    .remark-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #7c9aa6;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.3rem;
+    }
+
+    .remark-text {
+        font-size: 0.85rem;
+        color: #446c7a;
+        line-height: 1.4;
+    }
+
+    .remark-text i {
+        color: #8fb0bb;
+        margin-right: 0.3rem;
+    }
+
+    /* Empty State */
+    .empty-state-modern {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: #fafcfd;
+        border-radius: 1rem;
+        border: 1px dashed #cde0e7;
+    }
+
+    .empty-state-modern i {
+        font-size: 3rem;
+        color: #cde0e7;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-modern h6 {
+        font-size: 1rem;
+        color: #446c7a;
+        margin-bottom: 0.25rem;
+    }
+
+    .empty-state-modern p {
+        font-size: 0.8rem;
+        color: #8fb0bb;
+        margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .profile-body {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .session-header {
+            flex-direction: column;
+        }
+        .session-details {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .record-header {
+            flex-direction: column;
+        }
+        .header-title {
+            width: 100%;
+        }
+        .stats-row-mini {
+            flex-direction: column;
+        }
+    }
 </style>
 
 <div class="record-container">
+    
+    <!-- Header -->
+    <div class="record-header">
+        <div class="header-title">
+            <div class="icon-circle">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <div>
+                <h3>Student Record</h3>
+                <p><i class="fas fa-history"></i> Complete counselling history and profile</p>
+            </div>
+        </div>
+        <a href="{% url 'booking:student_search' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Search
+        </a>
+    </div>
 
-    <!-- Student Profile -->
-    <div class="profile-card">
-        <h3 class="profile-name">{{ student.name }}</h3>
-        <div class="profile-meta mt-2">
-            <p><strong>Email:</strong> {{ student.email }}</p>
-            <p><strong>Unique ID:</strong> {{ student.unique_id }}</p>
+    <!-- Student Profile Card -->
+    <div class="profile-card-modern">
+        <div class="profile-header">
+            <div class="profile-name-large">
+                <i class="fas fa-user-circle"></i>
+                {{ student.name }}
+            </div>
+            <div class="profile-id">
+                <i class="fas fa-id-card"></i>
+                Student ID: {{ student.unique_id }}
+            </div>
+        </div>
+        <div class="profile-body">
+            <div class="info-group">
+                <div class="info-label">
+                    <i class="fas fa-envelope"></i> CONTACT
+                </div>
+                <div class="info-value">
+                    <i class="fas fa-envelope"></i> {{ student.email }}
+                </div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">
+                    <i class="fas fa-calendar-alt"></i> REGISTERED ON
+                </div>
+                <div class="info-value">
+                    <i class="fas fa-calendar"></i> {{ student.created_at|date:"M d, Y"|default:"N/A" }}
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Counseling History -->
-    <h4 class="section-title">📖 Counseling History</h4>
+    <!-- Statistics Row -->
+    {% if bookings %}
+    <div class="stats-row-mini">
+        <div class="stat-mini-card">
+            <div class="stat-mini-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-mini-info">
+                <div class="stat-number">{{ bookings|length }}</div>
+                <div class="stat-label">Total Sessions</div>
+            </div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-mini-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-mini-info">
+                <div class="stat-number">{{ attended_count }}</div>
+                <div class="stat-label">Attended</div>
+            </div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-mini-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-mini-info">
+                <div class="stat-number">{{ pending_count }}</div>
+                <div class="stat-label">Pending/Missed</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Counseling History Section -->
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fas fa-book-open"></i>
+            Counseling History
+        </div>
+        {% if bookings %}
+            <small style="color: #8fb0bb;">
+                <i class="fas fa-clock"></i> {{ bookings|length }} session{{ bookings|length|pluralize }}
+            </small>
+        {% endif %}
+    </div>
 
     {% if bookings %}
+        <div class="sessions-grid">
+            {% for b in bookings %}
+                <div class="session-card-modern {% if b.is_emergency %}emergency-session{% endif %}">
+                    <div class="session-content">
+                        <div class="session-header">
+                            <div class="session-date-time">
+                                <span class="date-badge">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    {{ b.slot.date|date:"M d, Y" }}
+                                </span>
+                                <span class="time-badge">
+                                    <i class="far fa-clock"></i>
+                                    {{ b.session_start|time:"g:i A" }} – {{ b.session_end|time:"g:i A" }}
+                                </span>
+                            </div>
+                            <div>
+                                {% if b.attended %}
+                                    <span class="status-badge-modern status-attended">
+                                        <i class="fas fa-check-circle"></i> Attended
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge-modern status-missed">
+                                        <i class="fas fa-times-circle"></i> Missed
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
 
-        {% for b in bookings %}
-            <div class="session-card">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <strong>{{ b.slot.date }}</strong>
-                        ({{ b.session_start }} – {{ b.session_end }})
+                        <div class="session-details">
+                            <div class="detail-item">
+                                <i class="fas fa-building"></i>
+                                <strong>Department:</strong> {{ b.student_department|default:"Not specified" }}
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-graduation-cap"></i>
+                                <strong>Year:</strong> {{ b.student_year|default:"Not specified" }}
+                            </div>
+                            {% if b.is_emergency %}
+                                <div class="detail-item">
+                                    <i class="fas fa-exclamation-triangle" style="color: #dc7a6e;"></i>
+                                    <strong style="color: #dc7a6e;">Emergency Session</strong>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="remark-section">
+                            <div class="remark-label">
+                                <i class="fas fa-pen"></i> Counsellor's Remark
+                            </div>
+                            <div class="remark-text">
+                                {% if b.counselor_remark %}
+                                    <i class="fas fa-quote-left"></i> {{ b.counselor_remark }}
+                                {% else %}
+                                    <i class="fas fa-edit"></i> No remark provided for this session.
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
-
-                    <div>
-                        {% if b.attended %}
-                            <span class="status-badge badge-attended">Attended</span>
-                        {% else %}
-                            <span class="status-badge badge-missed">Missed</span>
-                        {% endif %}
-                    </div>
                 </div>
-
-                <div class="mt-2 text-muted">
-                    Department: {{ b.student_department }} |
-                    Year: {{ b.student_year }}
-                </div>
-
-                <div class="mt-2">
-                    <strong>Remark:</strong>
-                    {{ b.counselor_remark|default:"No remark provided." }}
-                </div>
-            </div>
-        {% endfor %}
-
-    {% else %}
-
-        <div class="profile-card empty-state">
-            <h6>No previous sessions</h6>
-            <p>This student has no counseling history yet.</p>
+            {% endfor %}
         </div>
-
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state-modern">
+            <i class="fas fa-book"></i>
+            <h6>No Counseling History</h6>
+            <p>This student has not attended any counseling sessions yet.</p>
+        </div>
     {% endif %}
 
 </div>
 
+<!-- Additional scripts -->
+<script>
+    (function() {
+        // Log page load
+        console.log("Student record page loaded for: {{ student.name }}");
+    })();
+</script>
 {% endblock %}
