@@ -5,6 +5,10 @@
 <h2 class="fw-bold mb-3">Hello, {{ student.name }} 👋</h2>
 
 <a href="{% url 'booking:student_logout' %}" class="btn btn-danger mb-3">Logout</a>
+<a href="{% url 'booking:book_session' 0 '00:00:00' %}?emergency=true"
+   class="btn btn-danger">
+   🚨 Emergency Booking
+</a>
 
 <div class="card p-4">
     <h4 class="mb-3">Available Sessions</h4>

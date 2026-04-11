@@ -44,6 +44,7 @@ urlpatterns = [
 path('counselor/student/<int:student_id>/', views.student_detail, name='student_detail'),
 path('principal/analytics/', views.principal_analytics, name='principal_analytics'),
 path('principal/insights/', views.principal_insights, name='principal_insights'),
+path('analytics/download/', views.download_analytics_pdf, name='download_analytics_pdf'),
 
 
 

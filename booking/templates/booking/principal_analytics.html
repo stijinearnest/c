@@ -43,6 +43,10 @@
 </style>
 
 <div class="analytics-container">
+    <a href="{% url 'booking:download_analytics_pdf' %}?counselor={{ selected_counselor }}&start={{ start_date }}&end={{ end_date }}"
+   class="btn btn-success mt-3">
+   📄 Download PDF
+</a>
 
     <h2 style="color:#2e5e6e;">📊 Advanced Analytics</h2>
 

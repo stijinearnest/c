@@ -1,3 +1,10 @@
+from django.http import HttpResponse
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from django.db.models import Count
+from django.utils.timezone import now
+from datetime import timedelta
 from django.db.models import Count, Q
 from django.utils import timezone
 from django.core.mail import send_mail
@@ -87,6 +94,7 @@ def student_dashboard(request):
                 })
     return render(request, 'booking/student_dashboard.html', {'student': student, 'available': available})
 def book_session(request, slot_id, session_start):
+    
 
     student_in_session = request.session.get('student')
     slot = get_object_or_404(Slot, id=slot_id)
@@ -323,25 +331,19 @@ def add_remark(request, booking_id):
 
 def staff_login_view(request):
 
-    # If already logged in, redirect properly
-    if request.user.is_authenticated:
-        if request.user.groups.filter(name="Principal").exists():
-            return redirect('booking:principal_dashboard')
-        elif request.user.groups.filter(name="Counselor").exists():
-            return redirect('booking:counselor_dashboard')
-        else:
-            logout(request)
-
     if request.method == 'POST':
         form = CounselorLoginForm(data=request.POST)
 
         if form.is_valid():
+
+            # 🔥 Only NOW logout old user (after CSRF passed)
+            if request.user.is_authenticated:
+                logout(request)
+
             user = form.get_user()
             login(request, user)
 
-            # IMPORTANT: refresh user instance after login
-            user = request.user
-
+            # 🎯 Redirect based on role
             if user.groups.filter(name="Principal").exists():
                 return redirect('booking:principal_dashboard')
 
@@ -357,8 +359,7 @@ def staff_login_view(request):
             messages.error(request, "Invalid credentials.")
             return redirect('booking:home')
 
-    return redirect('booking:home')
-
+    return render(request, 'booking/unified_login.html')
 @principal_required
 def principal_dashboard(request):
     total_bookings = Booking.objects.count()
@@ -519,9 +520,6 @@ def principal_analytics(request):
     return render(request, "booking/principal_analytics.html", context)
 
 
-from django.db.models import Count
-from django.utils.timezone import now
-from datetime import timedelta
 
 @principal_required
 def principal_insights(request):
@@ -600,3 +598,73 @@ def principal_insights(request):
     return render(request, "booking/principal_insights.html", {
         "insights": insights
     })                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+
+@principal_required
+def download_analytics_pdf(request):
+
+    counselor_id = request.GET.get("counselor")
+    start_date = request.GET.get("start")
+    end_date = request.GET.get("end")
+
+    bookings = Booking.objects.all()
+
+# ✅ Only apply filters if valid values exist
+    if counselor_id and counselor_id != "None":
+        bookings = bookings.filter(slot__counselor_id=counselor_id)
+
+    if start_date and start_date != "None":
+        bookings = bookings.filter(slot__date__gte=start_date)
+
+    if end_date and end_date != "None":
+        bookings = bookings.filter(slot__date__lte=end_date)
+    total = bookings.count()
+    attended = bookings.filter(attended=True).count()
+    not_attended = total - attended
+    emergency = bookings.filter(is_emergency=True).count()
+    regular = total - emergency
+
+    # 📄 Create response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="analytics_report.pdf"'
+
+    doc = SimpleDocTemplate(response)
+    styles = getSampleStyleSheet()
+
+    # 🎯 Make labels user-friendly
+    counselor_label = "All Counselors" if not counselor_id else counselor_id
+    date_label = f"{start_date or 'Beginning'} to {end_date or 'Today'}"
+
+    elements = []
+
+    # Title
+    elements.append(Paragraph("Counseling Analytics Report", styles['Title']))
+    elements.append(Spacer(1, 20))
+
+    # Filters
+    elements.append(Paragraph("Filters Applied:", styles['Heading3']))
+    elements.append(Paragraph(f"Counselor: {counselor_label}", styles['Normal']))
+    elements.append(Paragraph(f"Date Range: {date_label}", styles['Normal']))
+    elements.append(Spacer(1, 20))
+
+    # Table Data
+    data = [
+        ["Metric", "Value"],
+        ["Total Bookings", total],
+        ["Attended", attended],
+        ["Not Attended", not_attended],
+        ["Emergency", emergency],
+        ["Regular", regular],
+    ]
+
+    table = Table(data)
+    table.setStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ])
+
+    elements.append(table)
+
+    doc.build(elements)
+
+    return response
