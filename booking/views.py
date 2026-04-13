@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.utils import timezone
+import datetime
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
@@ -14,7 +16,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.models import User, Group
 from django.db.models import Count
 from django.contrib.auth.decorators import user_passes_test
-# booking/views.py
+from django.utils import timezone
 import datetime
 from datetime import time as dtime, timedelta
 from django.core.mail import send_mail
@@ -60,20 +62,38 @@ def student_login_view(request):
 def student_logout(request):
     request.session.pop('student', None)
     return redirect('booking:home')
+
 def get_all_future_sessions():
     sessions = []
-    slots = Slot.objects.filter(date__gte=datetime.date.today()).order_by('date', 'start_time')
+    now = timezone.now()
+
+    slots = Slot.objects.filter(
+        date__gte=datetime.date.today()
+    ).order_by('date', 'start_time')
 
     for slot in slots:
         for sstart, send in slot.generate_sessions():
+
+            # 🔥 Create datetime
+            session_datetime = datetime.datetime.combine(slot.date, sstart)
+
+            # 🔥 Convert to timezone-aware
+            session_datetime = timezone.make_aware(session_datetime)
+
+            # 🔥 Skip past sessions
+            if session_datetime <= now:
+                continue
+
             sessions.append({
                 'slot': slot,
                 'session_start': sstart,
                 'session_end': send,
-                'datetime': datetime.datetime.combine(slot.date, sstart)
+                'datetime': session_datetime
             })
 
     return sorted(sessions, key=lambda x: x['datetime'])
+
+    
 def student_dashboard(request):
     student = request.session.get('student')
     if not student:
@@ -83,15 +103,28 @@ def student_dashboard(request):
 
     available = []
 
+    now = timezone.now()
+
     for slot in slots:
         for sstart, send in slot.generate_sessions():
+
+            session_datetime = datetime.datetime.combine(slot.date, sstart)
+
+        # 🔥 MAKE AWARE (THIS IS WHAT YOU MISSED)
+            session_datetime = timezone.make_aware(session_datetime)
+
+        # 🔥 SKIP PAST SESSIONS
+            if session_datetime <= now:
+                continue
+
             booked = Booking.objects.filter(slot=slot, session_start=sstart).exists()
+
             if not booked:
                 available.append({
-                    'slot': slot,
-                    'session_start': sstart.strftime('%H:%M:%S'),
-                    'session_end': send.strftime('%H:%M:%S'),
-                })
+                'slot': slot,
+                'session_start': sstart.strftime('%H:%M:%S'),
+                'session_end': send.strftime('%H:%M:%S'),
+            })
 
     # 🔥 NEW: FIND EMERGENCY SLOT
     all_sessions = get_all_future_sessions()
